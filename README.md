@@ -1,12 +1,12 @@
-# From Zero to Foundry
+Foundry First Steps
 --------------------
 
 This repo contains a very basic Foundry set up ready to be your first steps into the toolchain. Follow the instructions below to run your first Foundry tests!
 
 Note that the instructions are for linux systems. However, they should be reproducible on Windows using the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/).
 
-## Installing Foundry
----------------------
+Installing Foundry
+------------------
 
 As described in the [Foundry repository](https://github.com/foundry-rs/foundry/), you only need to execute the following command:
 
@@ -18,8 +18,8 @@ Then, run `foundryup` in a new terminal session or after reloading your `PATH`.
 
 For other installation methods, go to the [Foundry repository](https://github.com/foundry-rs/foundry/).
 
-## Repository contents
-----------------------
+Repository contents
+-------------------
 
 This repository contains two main files, `token.sol` and `exclusiveToken.sol`, both in the [`src`](./src/) folder.
 It also contains the corresponding tests `token.t.sol` and `exclusiveToken.t.sol` in the [`test`](./test/) folder.
@@ -35,8 +35,8 @@ The file `exclusiveToken.sol` contains a modified version of `token.sol`. This c
 
 However, note that we don't have the source code of the alUSD token, and much less a file or something similar with the current state of alUSD on the blockchain. Thus, we must use Foundry's extra capabilities to excercise the test correctly.
 
-## Using Foundry
-----------------
+Using Foundry
+-------------
 
 We will use foundry for three different stages:
 
@@ -71,7 +71,7 @@ The `-vvvv` option just indicates the verbosity of the output. It can go from be
 Running this test is the same as in the previous case, but with an extra argument, `--fork-url`. We need to provide to `--fork-url` the URL of a RPC client such as Alchemy or Infura.
 
 ```
-forge test -vvvv --fork-url <your_url> --match /test/exclusiveToken.t.sol
+forge test -vvvv --fork-url <your_url> --match-path test/exclusiveToken.t.sol
 ```
 
 If you wish to exercise all tests at once, you just have to omit the `--match` argument. But don't forget to add the `--fork-url`! Otherwise the test in `exclusiveToken.t.sol` won't be exercised.

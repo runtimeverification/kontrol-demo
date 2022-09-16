@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "utils/IERC20.sol";
+import "./utils/IERC20.sol";
 
 contract ExclusiveToken {
     address immutable owner;
