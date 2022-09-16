@@ -71,7 +71,7 @@ The `-vvvv` option just indicates the verbosity of the output. It can go from be
 Running this test is the same as in the previous case, but with an extra argument, `--fork-url`. We need to provide to `--fork-url` the URL of a RPC client such as Alchemy or Infura.
 
 ```
-forge test -vvvv --fork-url <your_url> --match /test/exclusiveToken.t.sol
+forge test -vvvv --fork-url <your_url> --match-path test/exclusiveToken.t.sol
 ```
 
 If you wish to exercise all tests at once, you just have to omit the `--match` argument. But don't forget to add the `--fork-url`! Otherwise the test in `exclusiveToken.t.sol` won't be exercised.
