@@ -1,4 +1,4 @@
-From Zero to Foundry
+Foundry First Steps
 --------------------
 
 This repo contains a very basic Foundry set up ready to be your first steps into the toolchain. Follow the instructions below to run your first Foundry tests!
