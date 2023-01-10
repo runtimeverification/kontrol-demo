@@ -28,11 +28,15 @@ foundry_show() {
 }
 
 foundry_out=out
-test=Examples.test_assert_bool_failing
-test=Examples.test_assert_bool_passing
-test=Examples.test_wmul_strictly_increasing
-test=Examples.test_wmul_increasing
-test=Examples.test_wmul_increasing_2
+
+#test=Examples.test_assert_bool_failing
+#test=Examples.test_assert_bool_passing
+#test=Examples.test_wmul_increasing_overflow
+#test=Examples.test_wmul_increasing
+#test=Examples.test_wmul_increasing_positive
+#test=Examples.test_wmul_increasing_ge_one
+#test=Examples.test_wmul_wdiv_inverse_underflow
+test=Examples.test_wmul_wdiv_inverse
 
 regen=--regen
 regen=
