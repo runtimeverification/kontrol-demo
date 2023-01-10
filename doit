@@ -1,0 +1,58 @@
+set -euxo pipefail
+
+clean() {
+    rm -rf ${foundry_out}
+    (   cd $(dirname ${foundry_out})
+        forge build
+    )
+}
+
+foundry_kompile() {
+    kevm foundry-kompile ${foundry_out} --verbose \
+        --require ../../lemmas.k                  \
+        --module-import DEMO-LEMMAS               \
+        ${rekompile} ${regen}
+}
+
+foundry_prove() {
+    kevm foundry-prove ${foundry_out}      \
+        --profile --verbose ${debug}       \
+        --test ${test}                     \
+        ${simplify_init}                   \
+        ${reinit}                          \
+        "$@"
+}
+
+foundry_show() {
+    kevm foundry-show ${foundry_out} ${test}
+}
+
+foundry_out=out
+test=Examples.test_assert_bool_failing
+test=Examples.test_assert_bool_passing
+test=Examples.test_wmul_strictly_increasing
+test=Examples.test_wmul_increasing
+test=Examples.test_wmul_increasing_2
+
+regen=--regen
+regen=
+
+rekompile=--rekompile
+rekompile=
+
+# switch order to resume instead of restarting
+reinit=--reinit
+reinit=
+
+# probably mostly leave alone
+simplify_init=
+simplify_init=--no-simplify-init
+
+debug=--debug
+debug=
+
+# Uncomment these lines as needed
+clean
+foundry_kompile
+foundry_prove "$@"
+foundry_show
