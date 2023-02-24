@@ -133,14 +133,14 @@ For example:
 - If you add/modify K lemmas in `lemmas.k`, you need to rerun the above `foundry-kompile` command with the `--rekompile` option added.
 
 Once you have kompiled the definition, you can now run proofs!
-For example, to run a some simple proofs from [`test/simple.t.sol`](tests/simple.t.sol), you could do:
+For example, to run some simple proofs from [`test/simple.t.sol`](test/simple.t.sol), you could do:
 
 ```sh
 kevm foundry-prove --verbose out --test Examples.test_assert_bool_failing --test Examples.test_assert_bool_passing -j2
 ```
 
 Notice you can use `--test ContractName.testName` to filter tests to run, and can use `-jN` to run listed proofs in parallel!
-In the file `tests/simple.t.sol`, in contract `Examples`, you'll find a progression of more detailed tests about wad/ray/rad arithmetic.
+In the file `test/simple.t.sol`, in contract `Examples`, you'll find a progression of more detailed tests about wad/ray/rad arithmetic.
 See if you can understand why each proof is passing or not.
 
 You can visualize the result of proofs using the following command:
