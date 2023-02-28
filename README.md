@@ -31,9 +31,11 @@ Install `kup`:
 bash <(curl https://kframework.org/install)
 ```
 
-Then install KEVM using `kup`:
+Then install K, `kore-rpc`, and KEVM using `kup` (first time will take a while):
 
 ```sh
+kup install k
+kup install kore-rpc
 kup install kevm
 ```
 
