@@ -95,16 +95,16 @@ verbose=
 verbose=--verbose
 
 break_on_calls=
-break_on_cals=--no-break-on-calls
+break_on_calls=--no-break-on-calls
 
 # Uncomment these lines as needed
 # pkill kore-rpc || true
 # make build-foundry -j2
-forge_build
-foundry_kompile --rekompile --regen
+# forge_build
+# foundry_kompile --rekompile --regen
 # foundry_list
 # foundry_remove_node 4b6c47..d6d6d3
-foundry_prove --reinit -j9                               \
+foundry_prove -j9                                        \
     --test Examples.test_assert_bool_failing             \
     --test Examples.test_assert_bool_passing             \
     --test Examples.test_wmul_increasing_overflow        \
