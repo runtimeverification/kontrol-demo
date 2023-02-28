@@ -92,7 +92,7 @@ As simple as that.
 ### Running tests
 
 Since we have several different tests with different needs, we will tell Foundry which test to exercise.
-This is done with the optios `--match` or `--match-path`, which match a sting against the name of the test (executing all matches) or against the path of a file.
+This is done with the options `--match` or `--match-path`, which match a string against the name of the test (executing all matches) or against the path of a file.
 If we only want to exercise the test contained in `token.t.sol`, we can do so by running the following command:
 
 ```sh
@@ -104,8 +104,8 @@ It can go from being absent (verbosity 1) to five `v`'s (verbosity 5).
 For more details see [here](https://book.getfoundry.sh/forge/tests#logs-and-traces).
 
 We can also run the `exclusiveToken.t.sol` test.
-Running this test is the same as in the previous case, but with an extra argument, `--fork-url`.
-We need to provide to `--fork-url` the URL of a RPC client such as Alchemy or Infura.
+Running this test is the same as in the previous case, but the test requires an extra
+argument, `--fork-url`, to provide the URL of an RPC client such as Alchemy or Infura.
 
 ```sh
 forge test -vvvv --fork-url <your_url> --match-path test/exclusiveToken.t.sol
