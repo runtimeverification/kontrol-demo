@@ -2,9 +2,10 @@
 pragma solidity ^0.8.13;
 
 import "../src/ERC20.sol";
+import "../src/utils/KEVMCheats.sol";
 import "forge-std/Test.sol";
 
-contract ERC20Test is Test {
+contract ERC20Test is Test, KEVMCheats {
 
     ERC20 erc20 = new ERC20("Bucharest Hackathon Token", "BHT");
 
@@ -19,6 +20,7 @@ contract ERC20Test is Test {
     /// @notice Property test: A successful transfer of 0 amount MUST emit the Transfer event.
     function testZeroTransferPossible(address alice, address bob) 
     public {
+        kevm.infiniteGas(); // uncomment this for KEVM-Foundry
         vm.expectEmit(true, true, true, true);
         emit Transfer(alice, bob, 0);
         vm.startPrank(alice);
