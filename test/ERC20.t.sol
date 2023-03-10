@@ -6,7 +6,7 @@ import "forge-std/Test.sol";
 
 contract ERC20Test is Test {
 
-    ERC20 erc20 = new ERC20("Bucharest Hackaton Token", "BHT");
+    ERC20 erc20 = new ERC20("Bucharest Hackathon Token", "BHT");
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
