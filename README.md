@@ -144,6 +144,15 @@ This command takes extra parameters if needed:
 - `--node NODE_ID`: Output the given node fully as well as the KCFG (repeats allowed).
 - `--node-delta NODE_ID_1,NODE_ID_2`: Output the differences between the two nodes as well as the full KCFG (repeats allowed).
 
+If you have a node with a term that should be simplified, you need to add a lemma in [lemmas.k](./lemmas.k).
+You recompile using the command above and the `--rekompile` flag.
+Next call `simplify-node` on the node, and check that it simplifies.
+
+For example, if there is a branch that should not happen:
+You add a lemma, and call `rekompile`, then check that it simplifies the bad branch to `bottom` on using `simplify-node`.
+After you're satisfied it won't branch again, you call `remove-node` on the node prior to the branch.
+Then recall `prove` but without `--reinit` flag, to resume execution.
+
 -------
 
 And this is it! If you followed the instructions you just ran your first Foundry tests!
