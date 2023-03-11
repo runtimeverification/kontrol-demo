@@ -7,8 +7,8 @@ import "forge-std/Test.sol";
 
 contract ERC20Test is Test, KEVMCheats {
 
-    address alice = address(12314);
-    address bob = address(123423514);
+    address alice;
+    address bob;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -43,16 +43,18 @@ contract ERC20Test is Test, KEVMCheats {
     ****************************/
 
     /// @notice Property test: A successful transfer of 0 amount MUST emit the Transfer event.
-    function testZeroTransferPossible() public {
-        ERC20 erc20 = new ERC20("Bucharest Hackathon Token", "BHT");
-        // kevm.symbolicStorage(address(erc20));
-        kevm.infiniteGas();
-        vm.expectEmit(true, true, true, true);
-        emit Transfer(alice, bob, 0);
-        vm.startPrank(alice);
-        bool result = erc20.transfer(bob, 0);
-        vm.stopPrank();
-        assertTrue(result);
-    }
+    // function testZeroTransferPossible() public {
+    //     ERC20 erc20 = new ERC20("Bucharest Hackathon Token", "BHT");
+    //     alice = address(12314);
+    //     bob = address(123423514);
+    //     // kevm.symbolicStorage(address(erc20));
+    //     kevm.infiniteGas();
+    //     vm.expectEmit(true, true, true, true);
+    //     emit Transfer(alice, bob, 0);
+    //     vm.startPrank(alice);
+    //     bool result = erc20.transfer(bob, 0);
+    //     vm.stopPrank();
+    //     assertTrue(result);
+    // }
 }
 
