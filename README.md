@@ -125,7 +125,7 @@ This is a big step up in assurance from property testing, but is more computatio
 First, we need to build the KEVM definition for this Foundry property test suite:
 
 ```sh
-kevm foundry-kompile --verbose out --require ../../lemmas.k --module-import DEMO-LEMMAS
+kevm foundry-kompile --verbose out --require lemmas.k --module-import HACKATHON-LEMMAS
 ```
 
 When you are working, you may need to rebuild the definition in various ways.
@@ -135,10 +135,10 @@ For example:
 - If you add/modify K lemmas in `lemmas.k`, you need to rerun the above `foundry-kompile` command with the `--rekompile` option added.
 
 Once you have kompiled the definition, you can now run proofs!
-For example, to run some simple proofs from [`test/simple.t.sol`](test/simple.t.sol), you could do:
+For example, to run some simple proofs from [`test/ERC20.t.sol`](test/ERC20.t.sol), you could do:
 
 ```sh
-kevm foundry-prove --verbose out --test Examples.test_assert_bool_failing --test Examples.test_assert_bool_passing -j2
+kevm foundry-prove --verbose out --test ERC20Test.testName --test ERC20Test.testSymbol -j2
 ```
 
 Notice you can use `--test ContractName.testName` to filter tests to run, and can use `-jN` to run listed proofs in parallel!
@@ -148,14 +148,14 @@ See if you can understand why each proof is passing or not.
 You can visualize the result of proofs using the following command:
 
 ```sh
-kevm foundry-view-kcfg --verbose out Examples.test_assert_bool_failing
+kevm foundry-view-kcfg --verbose out ERC20Test.testName
 ```
 
 This launches an interactive visualizer where you can click on individual nodes and edges in the generated KCFG (K Control Flow Graph) to inspect them.
 There is also static visualization you can use:
 
 ```sh
-kevm foundry-show --verbose out Examples.test_assert_bool_failing
+kevm foundry-show --verbose out ERC20Test.testName
 ```
 
 This command takes extra parameters if needed:

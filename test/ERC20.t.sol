@@ -14,6 +14,30 @@ contract ERC20Test is Test, KEVMCheats {
 
     /****************************
     *
+    * name() mandatory checks.
+    *
+    ****************************/
+
+    function testName() public {
+        ERC20 erc20 = new ERC20("Bucharest Hackathon Token", "BHT");
+        string memory returnedName = erc20.name();
+        assertEq(returnedName, "Bucharest Hackathon Token");
+    }
+
+    /****************************
+    *
+    * symbol() mandatory checks.
+    *
+    ****************************/
+
+    function testSymbol() public {
+        ERC20 erc20 = new ERC20("Bucharest Hackathon Token", "BHT");
+        string memory returnedSymbol = erc20.symbol();
+        assertEq(returnedSymbol, "BHT");
+    }
+
+    /****************************
+    *
     * transfer() mandatory checks.
     *
     ****************************/
