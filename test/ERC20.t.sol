@@ -46,22 +46,9 @@ contract ERC20Test is Test, KEVMCheats {
     function testZeroTransferPossible() public {
         ERC20 erc20 = new ERC20("Bucharest Hackathon Token", "BHT");
         // kevm.symbolicStorage(address(erc20));
-        kevm.infiniteGas(); // uncomment this for KEVM-Foundry
+        kevm.infiniteGas();
         vm.expectEmit(true, true, true, true);
         emit Transfer(alice, bob, 0);
-        vm.startPrank(alice);
-        bool result = erc20.transfer(bob, 0);
-        vm.stopPrank();
-        assertTrue(result);
-    }
-
-    /// @notice Property test: A successful transfer of positive amount MUST emit the Transfer event.
-    function testPositiveTransferEventEmission(uint256 amount, uint256 balance1, uint256 balance2) public {
-        ERC20 erc20 = new ERC20("Bucharest Hackathon Token", "BHT");
-        vm.assume(amount > 0);
-        vm.assume(amount <= erc20.balanceOf(alice));
-        vm.expectEmit(true, true, true, true);
-        emit Transfer(alice, bob, amount);
         vm.startPrank(alice);
         bool result = erc20.transfer(bob, 0);
         vm.stopPrank();

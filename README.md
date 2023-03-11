@@ -36,7 +36,7 @@ Then install K, `kore-rpc`, and KEVM using `kup` (first time will take a while):
 ```sh
 kup install k
 kup install kore-rpc
-kup install kevm
+kup install kevm --version hackathon
 ```
 
 For more detailed instructions about building KEVM from source, see [the KEVM repository](https://github.com/runtimeverification/evm-semantics).
@@ -52,24 +52,15 @@ See the [`test`](./test) directory for the Foundry property tests.
 
 In the [`src`](./src) subdirectory, you will find two tokens:
 
-- `token.sol`: The file contains a simple token with two functionalities: mint and transfer tokens.
-  Thus, it makes sense to test that the transfer function works correctly.
-  I.e., that if a user `A` transfers `x` amount of tokens to a user `B`, `A`'s balance is decreased by `x` and `B`'s balance is increased by `x`.
-  This is the property that `token.t.sol` tests.
-
-- `exclusiveToken.sol`: The file `exclusiveToken.sol` contains a modified version of `token.sol`.
-  This contract can only mint tokens to addresses that hold some [alUSD](https://etherscan.io/token/0xbc6da0fe9ad5f3b0d58160288917aa56653660e9).
-  Hence, what the test `exclusiveToken.t.sol` checks is precisely this, that accounts with zero balance in the alUSD contract cannot be minted to, and the opposite for addresses that hold alUSD.
-  However, note that we don't have the source code of the alUSD token, and much less a file or something similar with the current state of alUSD on the blockchain.
-  Thus, we must use Foundry's extra capabilities to excercise the test correctly.
+- `ERC20.sol`: The file contains the base ERC20 token Solidity contract from [Open Zeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20).
+- `KEVMCheats.sol`: The [KEVMCheats.sol](./src/utils/KEVMCheats.sol) contract interface contains functions which are only available to KEVM.
+                    Running a test that contains these function calls with `forge` will result in a failure with the `invalid data` error.
 
 ### Tests
 
 In the [`test`](./test) subdirectory, you will find tests of varying difficulty:
 
-- `simple.t.sol`: Standalone tests of arithmetic functions, no dependencies on the `src` directory.
-- `token.t.sol`: Tests of `token.sol`.
-- `exclusiveToken.t.sol`: Tests of `exclusiveToken.t.sol`.
+- `ERC20.t.sol` - tests for the `name`, `symbol`, and one case of the `transfer` functions.
 
 Property Testing Using Foundry
 ------------------------------
@@ -96,23 +87,14 @@ This is done with the options `--match` or `--match-path`, which match a string 
 If we only want to exercise the test contained in `token.t.sol`, we can do so by running the following command:
 
 ```sh
-forge test -vvvv --match-path test/token.t.sol
+forge test -vvvv --match-path test/ERC20.t.sol
 ```
 
 The `-vvvv` option just indicates the verbosity of the output.
 It can go from being absent (verbosity 1) to five `v`'s (verbosity 5).
 For more details see [here](https://book.getfoundry.sh/forge/tests#logs-and-traces).
 
-We can also run the `exclusiveToken.t.sol` test.
-Running this test is the same as in the previous case, but the test requires an extra
-argument, `--fork-url`, to provide the URL of an RPC client such as Alchemy or Infura.
-
-```sh
-forge test -vvvv --fork-url <your_url> --match-path test/exclusiveToken.t.sol
-```
-
 If you wish to exercise all tests at once, you just have to omit the `--match-path` argument.
-But don't forget to add the `--fork-url`! Otherwise the test in `exclusiveToken.t.sol` won't be exercised.
 
 Property Verification using KEVM
 --------------------------------
@@ -142,8 +124,6 @@ kevm foundry-prove --verbose out --test ERC20Test.testName --test ERC20Test.test
 ```
 
 Notice you can use `--test ContractName.testName` to filter tests to run, and can use `-jN` to run listed proofs in parallel!
-In the file `test/simple.t.sol`, in contract `Examples`, you'll find a progression of more detailed tests about wad/ray/rad arithmetic.
-See if you can understand why each proof is passing or not.
 
 You can visualize the result of proofs using the following command:
 
