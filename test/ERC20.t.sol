@@ -10,7 +10,7 @@ contract ERC20Test is Test, KEVMCheats {
     uint8 constant BALANCES_STORAGE_INDEX = 0;
     uint256 constant ALLOWANCES_STORAGE_INDEX = 1;
     uint256 constant TOTALSUPPLY_STORAGE_INDEX = 2;
-    
+
     function getStorageLocationForKey(address _key, uint8 _index) public pure returns(bytes32) {
         // Returns the index hash of the storage slot of a map at location `index` and the key `_key`.
         // returns `keccak(#buf(32,_key) +Bytes #buf(32, index))
@@ -119,6 +119,8 @@ contract ERC20Test is Test, KEVMCheats {
         ERC20 erc20 = new ERC20("Bucharest Workshop Token", "BWT");
         kevm.symbolicStorage(address(erc20));
         vm.assume(erc20.balanceOf(alice) == balanceA);
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(alice, alice, amount);
         vm.startPrank(alice);
         erc20.transfer(alice, amount);
         assert(erc20.balanceOf(alice) == balanceA);
@@ -150,7 +152,7 @@ contract ERC20Test is Test, KEVMCheats {
         kevm.infiniteGas();
         ERC20 erc20 = new ERC20("Bucharest Workshop Token", "BWT");
         kevm.symbolicStorage(address(erc20));
-        bytes32 storageLocation = keccak256(abi.encode(alice, bob, ALLOWANCES_STORAGE_INDEX));
+        bytes32 storageLocation = keccak256(abi.encode(bob, keccak256(abi.encode(alice, ALLOWANCES_STORAGE_INDEX))));
         vm.store(address(erc20), storageLocation, bytes32(amount));
         uint256 allowance = erc20.allowance(alice, bob);
         assertEq(allowance, amount);
