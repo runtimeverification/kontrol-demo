@@ -64,14 +64,17 @@ contract ERC20Test is Test, KEVMCheats {
     *
     ****************************/
 
-    function testBalanceOf(address addr, uint256 amount) public {
+    function testBalanceOf(address addr, uint256 amount, bytes32 storageSlot) public {
         kevm.infiniteGas();
         ERC20 erc20 = new ERC20("Bucharest Workshop Token", "BWT");
         kevm.symbolicStorage(address(erc20));
         bytes32 storageLocation = getStorageLocationForKey(addr, BALANCES_STORAGE_INDEX); //compute the storage location of _balances[addr]
         vm.store(address(erc20), storageLocation, bytes32(amount));
+        bytes32 initialStorage = vm.load(address(erc20), storageSlot);
         uint256 balance = erc20.balanceOf(addr);
+        bytes32 finalStorage = vm.load(address(erc20), storageSlot);
         assertEq(balance, amount);
+        assertEq(initialStorage, finalStorage);
     }
 
     /****************************
@@ -121,5 +124,38 @@ contract ERC20Test is Test, KEVMCheats {
         assert(erc20.balanceOf(alice) == balanceA);
     }
 
+    function testTransferSuccess_2(address alice, address bob, uint256 amount, uint256 balanceA, uint256 balanceB) public {
+        kevm.infiniteGas();
+        vm.assume(alice != address(0));
+        vm.assume(bob != address(0));
+        vm.assume(alice != bob);
+        vm.assume(amount <= balanceA);
+        ERC20 erc20 = new ERC20("Bucharest Workshop Token", "BWT");
+        kevm.symbolicStorage(address(erc20));
+        vm.assume(erc20.balanceOf(alice) == balanceA);
+        vm.assume(erc20.balanceOf(bob) == balanceB);
+        vm.startPrank(alice);
+        erc20.transfer(bob, amount);
+        assert(erc20.balanceOf(alice) == balanceA - amount);
+        assert(erc20.balanceOf(bob) == balanceB + amount);
+    }
+
+    /****************************
+    *
+    * allowance() mandatory checks.
+    *
+    ****************************/
+
+    function testAllowance(address alice, address bob, uint256 amount) public {
+        kevm.infiniteGas();
+        ERC20 erc20 = new ERC20("Bucharest Workshop Token", "BWT");
+        kevm.symbolicStorage(address(erc20));
+        bytes32 storageLocation = keccak256(abi.encode(alice, bob, ALLOWANCES_STORAGE_INDEX));
+        vm.store(address(erc20), storageLocation, bytes32(amount));
+        uint256 allowance = erc20.allowance(alice, bob);
+        assertEq(allowance, amount);
+    }
+
+    function testApprove
 }
 

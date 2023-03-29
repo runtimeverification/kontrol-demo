@@ -36,7 +36,7 @@ Then install K, `kore-rpc`, and KEVM using `kup` (first time will take a while):
 ```sh
 kup install k
 kup install kore-rpc
-kup install kevm --version hackathon
+kup install kevm --version anvacaru/set-symbolic
 ```
 
 For more detailed instructions about building KEVM from source, see [the KEVM repository](https://github.com/runtimeverification/evm-semantics).
@@ -107,7 +107,7 @@ This is a big step up in assurance from property testing, but is more computatio
 First, we need to build the KEVM definition for this Foundry property test suite:
 
 ```sh
-kevm foundry-kompile --verbose out --require lemmas.k --module-import HACKATHON-LEMMAS
+kevm foundry-kompile
 ```
 
 When you are working, you may need to rebuild the definition in various ways.
@@ -120,7 +120,7 @@ Once you have kompiled the definition, you can now run proofs!
 For example, to run some simple proofs from [`test/ERC20.t.sol`](test/ERC20.t.sol), you could do:
 
 ```sh
-kevm foundry-prove --verbose out --test ERC20Test.testName --test ERC20Test.testSymbol -j2
+kevm foundry-prove --test ERC20Test.testName --test ERC20Test.testSymbol -j2
 ```
 
 Notice you can use `--test ContractName.testName` to filter tests to run, and can use `-jN` to run listed proofs in parallel!
@@ -128,14 +128,14 @@ Notice you can use `--test ContractName.testName` to filter tests to run, and ca
 You can visualize the result of proofs using the following command:
 
 ```sh
-kevm foundry-view-kcfg --verbose out ERC20Test.testName
+kevm foundry-view-kcfg ERC20Test.testName
 ```
 
 This launches an interactive visualizer where you can click on individual nodes and edges in the generated KCFG (K Control Flow Graph) to inspect them.
 There is also static visualization you can use:
 
 ```sh
-kevm foundry-show --verbose out ERC20Test.testName
+kevm foundry-show ERC20Test.testName
 ```
 
 This command takes extra parameters if needed:
