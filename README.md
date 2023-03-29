@@ -107,7 +107,7 @@ This is a big step up in assurance from property testing, but is more computatio
 First, we need to build the KEVM definition for this Foundry property test suite:
 
 ```sh
-kevm foundry-kompile
+kevm foundry-kompile --require lemmas.k --module-import HACKATHON-LEMMAS
 ```
 
 When you are working, you may need to rebuild the definition in various ways.

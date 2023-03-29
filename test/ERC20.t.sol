@@ -155,7 +155,5 @@ contract ERC20Test is Test, KEVMCheats {
         uint256 allowance = erc20.allowance(alice, bob);
         assertEq(allowance, amount);
     }
-
-    function testApprove
 }
 

@@ -7,4 +7,7 @@ module HACKATHON-LEMMAS
 // #And ( ( { true #Equals VV1_b_3c5818c8 <Int ( ( chop ( ( ( VV0_a_3c5818c8 *Int VV1_b_3c5818c8 ) ) ) /Int 1000000000000000000 ) ) }
 
     rule X *Int Y <Int pow256 => true requires Y <=Int maxUInt256 /Int X [simplification]
+
+    rule #lookup ( M:Map [ keccak ( KEY:Bytes ) <- X:Int ] , keccak ( KEY ) ) => X [simplification]
+
 endmodule
