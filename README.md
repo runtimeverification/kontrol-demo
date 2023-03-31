@@ -60,7 +60,7 @@ In the [`src`](./src) subdirectory, you will find two tokens:
 
 In the [`test`](./test) subdirectory, you will find tests of varying difficulty:
 
-- `ERC20.t.sol` - tests for the `name`, `symbol`, and one case of the `transfer` functions.
+- `ERC20.t.sol` - tests for the ERC20 functions.
 
 Property Testing Using Foundry
 ------------------------------
@@ -80,14 +80,29 @@ forge build
 
 As simple as that.
 
-### Running tests
+### Running tests with Foundry
+
+Most of these tests are designed to work with symbolic execution and will most likely fail when used with foundry.
+The main differences are that:
+
+1. We use [KEVMCheats.sol](./src/utils/KEVMCheats.sol), which are not implemented in `forge`.
+2. We use `vm.assume` to set a precondition, instead of filtering input values.
+As example, the following would reject all inputs in forge:
+
+```solidity
+    function testExample(address alice, uint256 amount) public {
+        ERC20 erc20 = new ERC20("Token Name", "TKN");
+        vm.assume(erc20.balanceOf(alice) == amount);
+        assertEq(erc20.balanceOf(alice), amount);
+```
+
 
 Since we have several different tests with different needs, we will tell Foundry which test to exercise.
 This is done with the options `--match` or `--match-path`, which match a string against the name of the test (executing all matches) or against the path of a file.
-If we only want to exercise the test contained in `token.t.sol`, we can do so by running the following command:
+If we only want to exercise the test "testNameAndSymbol" in `ERC20.t.sol`, we can do so by running the following command:
 
 ```sh
-forge test -vvvv --match-path test/ERC20.t.sol
+forge test -vvvv --match-test testNameAndSymbol
 ```
 
 The `-vvvv` option just indicates the verbosity of the output.
@@ -101,13 +116,14 @@ Property Verification using KEVM
 
 With KEVM installed, you'll also have the option to do property verification!
 This is a big step up in assurance from property testing, but is more computationally expensive, and often requires manual intervention.
+Be advised that these tests usually have a longer execution time (~30 mins to an hour), depending on the machine.
 
 ### Build KEVM Definition
 
 First, we need to build the KEVM definition for this Foundry property test suite:
 
 ```sh
-kevm foundry-kompile --require lemmas.k --module-import HACKATHON-LEMMAS
+kevm foundry-kompile
 ```
 
 When you are working, you may need to rebuild the definition in various ways.
@@ -120,7 +136,7 @@ Once you have kompiled the definition, you can now run proofs!
 For example, to run some simple proofs from [`test/ERC20.t.sol`](test/ERC20.t.sol), you could do:
 
 ```sh
-kevm foundry-prove --test ERC20Test.testName --test ERC20Test.testSymbol -j2
+kevm foundry-prove --test ERC20Test.testNameAndSymbol --test ERC20Test.testTotalSupply -j2
 ```
 
 Notice you can use `--test ContractName.testName` to filter tests to run, and can use `-jN` to run listed proofs in parallel!
