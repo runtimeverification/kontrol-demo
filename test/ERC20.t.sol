@@ -206,6 +206,7 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        vm.assume(owner != address(0));
         vm.startPrank(owner);
         vm.expectRevert("ERC20: approve to the zero address");
         erc20.approve(address(0), value);
@@ -215,10 +216,12 @@ contract ERC20Test is Test, KEVMCheats {
       public
       initializer
       symbolic
-      //unchangedStorage(storageSlot)
+      unchangedStorage(storageSlot)
       {
         vm.assume(owner != address(0));
         vm.assume(spender != address(0));
+        bytes32 storageLocation = keccak256(abi.encode(spender, keccak256(abi.encode(owner, ALLOWANCES_STORAGE_INDEX))));
+        vm.assume(storageSlot != storageLocation);
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, value); 
