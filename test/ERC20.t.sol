@@ -7,12 +7,12 @@ import "forge-std/Test.sol";
 
 contract ERC20Test is Test, KEVMCheats {
 
-    uint8 constant BALANCES_STORAGE_INDEX = 0;
-    uint256 constant ALLOWANCES_STORAGE_INDEX = 1;
-    uint256 constant TOTALSUPPLY_STORAGE_INDEX = 2;
+    bytes32 constant BALANCES_STORAGE_INDEX = 0;
+    bytes32 constant ALLOWANCES_STORAGE_INDEX = bytes32(uint256(1));
+    bytes32 constant TOTALSUPPLY_STORAGE_INDEX = bytes32(uint256(2));
     ERC20 erc20;
 
-    function getStorageLocationForKey(address _key, uint8 _index) public pure returns(bytes32) {
+    function hashedLocation(address _key, bytes32 _index) public pure returns(bytes32) {
         // Returns the index hash of the storage slot of a map at location `index` and the key `_key`.
         // returns `keccak(#buf(32,_key) +Bytes #buf(32, index))
         return keccak256(abi.encode(_key, _index));
@@ -41,7 +41,21 @@ contract ERC20Test is Test, KEVMCheats {
 
     /****************************
     *
-    * name() mandatory checks.
+    * decimals() mandatory checks.
+    *
+    ****************************/
+
+    function testDecimals(bytes32 storageSlot)
+      public
+      initializer
+      symbolic
+      unchangedStorage(storageSlot) {
+        assertEq(erc20.decimals(), 18);
+    }
+
+    /****************************
+    *
+    * name() and symbol() mandatory checks.
     *
     ****************************/
 
@@ -65,7 +79,7 @@ contract ERC20Test is Test, KEVMCheats {
       symbolic
       unchangedStorage(storageSlot) {
         uint256 totalSupply = erc20.totalSupply();
-        uint256 storageValue = uint256(vm.load(address(erc20), bytes32(TOTALSUPPLY_STORAGE_INDEX)));
+        uint256 storageValue = uint256(vm.load(address(erc20), TOTALSUPPLY_STORAGE_INDEX));
         assertEq(totalSupply, storageValue);
     }
 
@@ -80,7 +94,7 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
-        bytes32 storageLocation = getStorageLocationForKey(addr, BALANCES_STORAGE_INDEX); //compute the storage location of _balances[addr]
+        bytes32 storageLocation = hashedLocation(addr, BALANCES_STORAGE_INDEX); //compute the storage location of _balances[addr]
         uint256 balance = erc20.balanceOf(addr);
         uint256 storageValue = uint256(vm.load(address(erc20), storageLocation));
         assertEq(balance, storageValue);
@@ -126,12 +140,11 @@ contract ERC20Test is Test, KEVMCheats {
         erc20.transfer(bob, amount);
     }
 
-    function testTransferSuccess_1(address alice, uint256 amount, bytes32 storageSlot)
+    function testTransferSuccess_0(address alice, uint256 amount, bytes32 storageSlot)
       public
       initializer
       symbolic
-      //unchangedStorage(storageSlot)
-      {
+      unchangedStorage(storageSlot) {
         vm.assume(alice != address(0));
         uint256 balanceA = erc20.balanceOf(alice);
         vm.assume(balanceA >= amount);
@@ -142,18 +155,17 @@ contract ERC20Test is Test, KEVMCheats {
         assertEq(erc20.balanceOf(alice), balanceA);
     }
 
-    function testTransferSuccess_2(address alice, address bob, uint256 amount, bytes32 storageSlot)
+    function testTransferSuccess_1(address alice, address bob, uint256 amount, bytes32 storageSlot)
       public
       initializer
       symbolic
       //unchangedStorage(storageSlot)
       {
-        bytes32 storageLocationA = getStorageLocationForKey(alice, BALANCES_STORAGE_INDEX);
-        bytes32 storageLocationB = getStorageLocationForKey(bob, BALANCES_STORAGE_INDEX);
+        //bytes32 storageLocationA = hashedLocation(alice, BALANCES_STORAGE_INDEX);
+        //bytes32 storageLocationB = hashedLocation(bob, BALANCES_STORAGE_INDEX);
         //I'm expecting the storage to change for _balances[alice] and _balances[bob]
-        vm.assume(storageLocationA != storageSlot);
-        vm.assume(storageLocationB != storageSlot);
-
+        //vm.assume(storageLocationA != storageSlot);
+        //vm.assume(storageLocationB != storageSlot);
         vm.assume(alice != address(0));
         vm.assume(bob != address(0));
         vm.assume(alice != bob);
@@ -174,13 +186,13 @@ contract ERC20Test is Test, KEVMCheats {
     *
     ****************************/
 
-    function testAllowance(address alice, address bob, bytes32 storageSlot)
+    function testAllowance(address owner, address spender, bytes32 storageSlot)
       public
       initializer
       symbolic
       unchangedStorage(storageSlot) {
-        bytes32 storageLocation = keccak256(abi.encode(bob, keccak256(abi.encode(alice, ALLOWANCES_STORAGE_INDEX))));
-        uint256 allowance = erc20.allowance(alice, bob);
+        bytes32 storageLocation = hashedLocation(spender, hashedLocation(owner, ALLOWANCES_STORAGE_INDEX));
+        uint256 allowance = erc20.allowance(owner, spender);
         uint256 storageValue = uint256(vm.load(address(erc20), storageLocation));
         assertEq(allowance, storageValue);
     }
@@ -191,17 +203,17 @@ contract ERC20Test is Test, KEVMCheats {
     *
     ****************************/
 
-    function testApproveFailure_0(address spender, uint256 value, bytes32 storageSlot)
+    function testApproveFailure_0(address spender, uint256 amount, bytes32 storageSlot)
       public
       initializer
       symbolic
       unchangedStorage(storageSlot) {
         vm.startPrank(address(0));
         vm.expectRevert("ERC20: approve from the zero address");
-        erc20.approve(spender, value);
+        erc20.approve(spender, amount);
     }
 
-    function testApproveFailure_1(address owner, uint256 value, bytes32 storageSlot)
+    function testApproveFailure_1(address owner, uint256 amount, bytes32 storageSlot)
       public
       initializer
       symbolic
@@ -209,24 +221,84 @@ contract ERC20Test is Test, KEVMCheats {
         vm.assume(owner != address(0));
         vm.startPrank(owner);
         vm.expectRevert("ERC20: approve to the zero address");
-        erc20.approve(address(0), value);
+        erc20.approve(address(0), amount);
     }
 
-    function testApproveSuccess(address owner, address spender, uint256 value, bytes32 storageSlot)
+    function testApproveSuccess(address owner, address spender, uint256 amount, bytes32 storageSlot)
       public
       initializer
       symbolic
-      unchangedStorage(storageSlot)
-      {
+      unchangedStorage(storageSlot) {
         vm.assume(owner != address(0));
         vm.assume(spender != address(0));
-        bytes32 storageLocation = keccak256(abi.encode(spender, keccak256(abi.encode(owner, ALLOWANCES_STORAGE_INDEX))));
+        bytes32 storageLocation = hashedLocation(spender, hashedLocation(owner, ALLOWANCES_STORAGE_INDEX));
         vm.assume(storageSlot != storageLocation);
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, value); 
-        erc20.approve(spender, value);
-        assertEq(erc20.allowance(owner, spender), value);
+        emit Approval(owner, spender, amount); 
+        erc20.approve(spender, amount);
+        assertEq(erc20.allowance(owner, spender), amount);
+      }
+
+    /****************************
+    *
+    * transferFrom() mandatory checks.
+    *
+    ****************************/
+
+    function testTransferFromFailure(address spender, address owner, address alice, uint256 amount, bytes32 storageSlot)
+      public
+      initializer
+      symbolic
+      unchangedStorage(storageSlot) {
+        vm.assume(spender != address(0));
+        vm.assume(owner != address(0));
+        vm.assume(alice != address(0));
+        vm.assume(erc20.allowance(owner, spender) < amount);
+        vm.startPrank(spender);
+        vm.expectRevert("ERC20: insufficient allowance");
+        erc20.transferFrom(owner, alice, amount);
+      }
+
+    function testTransferFromSuccess_0(address spender, address owner, address alice, uint256 amount, bytes32 storageSlot)
+      public
+      initializer
+      symbolic
+      unchangedStorage(storageSlot) {
+        vm.assume(spender != address(0));
+        vm.assume(owner != address(0));
+        vm.assume(alice != address(0));
+        bytes32 storageLocationO = hashedLocation(owner, BALANCES_STORAGE_INDEX);
+        bytes32 storageLocationA = hashedLocation(alice, BALANCES_STORAGE_INDEX);
+        vm.assume(storageSlot != storageLocationO);
+        vm.assume(storageSlot != storageLocationA);
+        vm.assume(erc20.allowance(owner, spender) == type(uint256).max);
+        vm.assume(erc20.balanceOf(owner) >= amount);
+        vm.startPrank(spender);
+        erc20.transferFrom(owner, alice, amount);
+      }
+
+    function testTransferFromSuccess_1(address spender, address owner, address alice, uint256 amount, bytes32 storageSlot)
+      public
+      initializer
+      symbolic
+      unchangedStorage(storageSlot) {
+        vm.assume(spender != address(0));
+        vm.assume(owner != address(0));
+        vm.assume(alice != address(0));
+        bytes32 storageLocationO = hashedLocation(owner, BALANCES_STORAGE_INDEX);
+        bytes32 storageLocationA = hashedLocation(alice, BALANCES_STORAGE_INDEX);
+        bytes32 storageLocationAllowance = hashedLocation(spender, hashedLocation(owner, ALLOWANCES_STORAGE_INDEX));
+        vm.assume(storageSlot != storageLocationO);
+        vm.assume(storageSlot != storageLocationA);
+        vm.assume(storageSlot != storageLocationAllowance);
+        vm.assume(erc20.allowance(owner, spender) != type(uint256).max);
+        vm.assume(erc20.allowance(owner, spender) >= amount);
+        vm.assume(erc20.balanceOf(owner) >= amount);
+        uint256 allowance = erc20.allowance(owner, spender);
+        vm.startPrank(spender);
+        erc20.transferFrom(owner, alice, amount);
+        assertEq(erc20.allowance(owner,spender), allowance - amount);
       }
 
     // tests for _mint and _burn.
@@ -254,7 +326,7 @@ contract ERC20Test is Test, KEVMCheats {
     //   symbolic
     //   unchangedStorage(storageSlot) {
     //     vm.assume(alice != address(0));
-    //     bytes32 storageLocationBalanceA = getStorageLocationForKey(alice, BALANCES_STORAGE_INDEX);
+    //     bytes32 storageLocationBalanceA = hashedLocation(alice, BALANCES_STORAGE_INDEX);
     //     vm.assume(storageSlot != storageLocationBalanceA);
     //     vm.assume(storageSlot != TOTALSUPPLY_STORAGE_INDEX);
     //     uint256 totalSupply = erc20.totalSupply();
@@ -304,7 +376,7 @@ contract ERC20Test is Test, KEVMCheats {
     //   unchangedStorage(storageSlot)
     //   {
     //     vm.assume(alice != address(0));
-    //     bytes32 storageLocationBalanceA = getStorageLocationForKey(alice, BALANCES_STORAGE_INDEX);
+    //     bytes32 storageLocationBalanceA = hashedLocation(alice, BALANCES_STORAGE_INDEX);
     //     vm.assume(storageSlot != storageLocationBalanceA);
     //     vm.assume(storageSlot != TOTALSUPPLY_STORAGE_INDEX);
     //     uint256 totalSupply = erc20.totalSupply();
