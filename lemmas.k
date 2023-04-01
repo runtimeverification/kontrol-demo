@@ -1,6 +1,7 @@
 requires "foundry.md"
 
-module HACKATHON-LEMMAS
+module ERC20-LEMMAS
     imports FOUNDRY
+    imports SET-SYMBOLIC
 
 endmodule

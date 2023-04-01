@@ -22,7 +22,7 @@ contract ERC20Test is Test, KEVMCheats {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     modifier initializer() {
-        erc20 = new ERC20("Bucharest Workshop Token", "BWT");
+        erc20 = new ERC20("Token Example", "TKN");
         _;
     }
 
@@ -63,8 +63,8 @@ contract ERC20Test is Test, KEVMCheats {
       public
       initializer
       unchangedStorage(storageSlot) {
-        assertEq(erc20.symbol(), "BWT");
-        assertEq(erc20.name(), "Bucharest Workshop Token");
+        assertEq(erc20.symbol(), "TKN");
+        assertEq(erc20.name(), "Token Example");
     }
 
     /****************************
@@ -155,7 +155,7 @@ contract ERC20Test is Test, KEVMCheats {
         assertEq(erc20.balanceOf(alice), balanceA);
     }
 
-    function testTransferSuccess_1(address alice, address bob, uint256 amount, bytes32 storageSlot)
+    function testTransferSuccess_1(address alice, address bob, uint256 amount)//, bytes32 storageSlot)
       public
       initializer
       symbolic

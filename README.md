@@ -1,12 +1,14 @@
-Foundry First Steps
---------------------
+First Steps
+-----------
 
-This repo contains a very basic Foundry set up ready to be your first steps into the toolchain.
-Follow the instructions below to run your first Foundry tests!
-By the end, you also will be able to verify your foundry property tests using [KEVM!](https://github.com/runtimeverification/evm-semantics).
+This repository contains a suite of property tests tailored for the OpenZeppelin ERC20 Solidity smart contract.
+It also includes a very basic Foundry set up ready to be your first steps into the toolchain.
 
+Follow the instructions below to run your first property tests using [KEVM!](https://github.com/runtimeverification/evm-semantics).
 Note that the instructions are for linux systems.
 However, they should be reproducible on Windows using the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/).
+
+Let's start with installing the tools we need.
 
 Installing Foundry
 ------------------
@@ -31,11 +33,10 @@ Install `kup`:
 bash <(curl https://kframework.org/install)
 ```
 
-Then install K, `kore-rpc`, and KEVM using `kup` (first time will take a while):
+Then install `k` and KEVM using `kup` (first time will take a while):
 
 ```sh
 kup install k
-kup install kore-rpc
 kup install kevm --version anvacaru/set-symbolic
 ```
 
@@ -44,15 +45,16 @@ For more detailed instructions about building KEVM from source, see [the KEVM re
 Repository contents
 -------------------
 
-This repository contains simple Solidity contracts and Foundry property tests associated with them.
+This repository contains the OpenZeppelin ERC20 (took from the latest commit at that time, `1a60b061d5bb809c3d7e4ee915c77a00b1eca95d`) and the associated property tests.
 See the [`src`](./src) directory for the Solidity source code.
 See the [`test`](./test) directory for the Foundry property tests.
 
 ### Contracts
 
-In the [`src`](./src) subdirectory, you will find two tokens:
+In the [`src`](./src) subdirectory, you will find multiple files:
 
 - `ERC20.sol`: The file contains the base ERC20 token Solidity contract from [Open Zeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20).
+- `IERC20Metadata.sol`, `IERC20.sol` and `Context.sol` are helper files of the ERC20 contract, imported from the same repository.
 - `KEVMCheats.sol`: The [KEVMCheats.sol](./src/utils/KEVMCheats.sol) contract interface contains functions which are only available to KEVM.
                     Running a test that contains these function calls with `forge` will result in a failure with the `invalid data` error.
 
@@ -65,10 +67,8 @@ In the [`test`](./test) subdirectory, you will find tests of varying difficulty:
 Property Testing Using Foundry
 ------------------------------
 
-We will use foundry for:
-
-- Building the project (i.e. compiling the files), and
-- Running the property tests on randomized inputs.
+Foundry will be used to build the project.
+Aditionally, it could run the property tests on randomized inputs.
 
 ### Building the project
 
@@ -82,18 +82,20 @@ As simple as that.
 
 ### Running tests with Foundry
 
-Most of these tests are designed to work with symbolic execution and will most likely fail when used with foundry.
+Most of these tests are designed to work with symbolic execution and will most likely fail when used with Foundry.
 The main differences are that:
 
 1. We use [KEVMCheats.sol](./src/utils/KEVMCheats.sol), which are not implemented in `forge`.
-2. We use `vm.assume` to set a precondition, instead of filtering input values.
+2. We use `vm.assume` to set a precondition or an assumption, instead of filtering input values.
 As example, the following would reject all inputs in forge:
 
 ```solidity
     function testExample(address alice, uint256 amount) public {
         ERC20 erc20 = new ERC20("Token Name", "TKN");
+        vm.assume(amount > 0 );
         vm.assume(erc20.balanceOf(alice) == amount);
         assertEq(erc20.balanceOf(alice), amount);
+    }
 ```
 
 
@@ -109,14 +111,14 @@ The `-vvvv` option just indicates the verbosity of the output.
 It can go from being absent (verbosity 1) to five `v`'s (verbosity 5).
 For more details see [here](https://book.getfoundry.sh/forge/tests#logs-and-traces).
 
-If you wish to exercise all tests at once, you just have to omit the `--match-path` argument.
+If you wish to exercise all tests at once, you just have to omit the `--match-test` argument.
 
 Property Verification using KEVM
 --------------------------------
 
 With KEVM installed, you'll also have the option to do property verification!
 This is a big step up in assurance from property testing, but is more computationally expensive, and often requires manual intervention.
-Be advised that these tests usually have a longer execution time (~30 mins to an hour), depending on the machine.
+Be advised that these tests usually have a longer execution time (~20 mins to an hour and a half), depending on the machine and the complexity of the test.
 
 ### Build KEVM Definition
 
