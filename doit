@@ -27,7 +27,7 @@ foundry_kompile() {
 }
 
 foundry_prove() {
-    kevm foundry-prove ${verbose} ${foundry_out} ${break_on_calls} --test ${test} "$@"
+    kevm foundry-prove ${verbose} ${foundry_out} ${break_on_calls} "$@"
 }
 
 foundry_show() {
@@ -90,7 +90,6 @@ foundry_out=out
 #test=Examples.test_wmul_increasing_ge_one
 #test=Examples.test_wmul_wdiv_inverse_underflow
 #test=Examples.test_wmul_wdiv_inverse
-test=ERC20Test.testZeroTransferPossible
 
 verbose=
 verbose=--verbose
@@ -101,14 +100,27 @@ break_on_calls=--no-break-on-calls
 # Uncomment these lines as needed
 # pkill kore-rpc || true
 # make build-foundry -j2
-forge_build
-foundry_kompile --rekompile --regen
+# forge_build
+# foundry_kompile --rekompile --regen
 # foundry_list
-foundry_prove
 # foundry_remove_node 4b6c47..d6d6d3
+foundry_prove -j9                                        \
+    --test Examples.test_assert_bool_failing             \
+    --test Examples.test_assert_bool_passing             \
+    --test Examples.test_wmul_increasing_overflow        \
+    --test Examples.test_wmul_increasing                 \
+    --test Examples.test_wmul_increasing_positive        \
+    --test Examples.test_wmul_increasing_gt_one          \
+    --test Examples.test_wmul_weakly_increasing_positive \
+    --test Examples.test_wmul_wdiv_inverse_underflow     \
+    --test Examples.test_wmul_wdiv_inverse
+# foundry_prove --reinit --use-booster
 # foundry_section_edge --sections 4 d38e0e..ee4ec8,593be8..e93e52
 # foundry_show # --no-minimize --node 35880c..e4389e --node 17e757..6c2e55
-foundry_view
+# foundry_view --verbose
+# for test in AccountParamsTest.testDealConcrete AccountParamsTest.testDealSymbolic AccountParamsTest.testEtchConcrete AccountParamsTest.testFail_GetNonce_true AccountParamsTest.testNonceSymbolic AccountParamsTest.test_GetNonce_true AccountParamsTest.test_Nonce_ExistentAddress AccountParamsTest.test_Nonce_NonExistentAddress AddrTest.test_notBuiltinAddress_concrete AddrTest.test_notBuiltinAddress_symbolic AllowChangesTest.testAllow AllowChangesTest.testFailAllowCallsToAddress AllowChangesTest.testFailAllowChangesToStorage ArithmeticTest.test_max1 ArithmeticTest.test_max2 AssumeTest.test_assume_staticCall AssumeTest.test_assume_true AssumeTest.test_multi_assume BlockParamsTest.testChainId BlockParamsTest.testCoinBase BlockParamsTest.testFee BlockParamsTest.testRoll BlockParamsTest.testWarp EmitContractTest.testExpectEmit EmitContractTest.testExpectEmitCheckEmitter EmitContractTest.testExpectEmitDoNotCheckData ExpectCallTest.testExpectRegularCall ExpectCallTest.testExpectStaticCall ExpectRevertTest.testFail_ExpectRevert_failAndSuccess ExpectRevertTest.testFail_expectRevert_empty ExpectRevertTest.testFail_expectRevert_false ExpectRevertTest.testFail_expectRevert_multipleReverts ExpectRevertTest.test_ExpectRevert_increasedDepth ExpectRevertTest.test_expectRevert_internalCall ExpectRevertTest.test_expectRevert_message ExpectRevertTest.test_expectRevert_true GasTest.testInfiniteGas LabelTest.testLabel PlainPrankTest.testFail_startPrank_internalCall PlainPrankTest.test_prank_zeroAddress_true PlainPrankTest.test_startPrankWithOrigin_true PlainPrankTest.test_startPrank_true PlainPrankTest.test_startPrank_zeroAddress_true PlainPrankTest.test_stopPrank_notExistent AssertTest.test_assert_true_branch AssertTest.test_source_map StoreTest.testGasLoadColdVM StoreTest.testGasLoadWarmUp StoreTest.testGasStoreColdVM StoreTest.testGasStoreWarmUp StoreTest.testLoadNonExistent StoreTest.testStoreLoad StoreTest.testStoreLoadNonExistent SymbolicStorageTest.testFail_SymbolicStorage SymbolicStorageTest.testFail_SymbolicStorage1 BytesTypeTest.test_bytes32 BytesTypeTest.test_bytes4 UintTypeTest.test_uint256; do
+#     foundry_to_dot
+# done
 
 # test=AssertTest.test_sum_10
 # date

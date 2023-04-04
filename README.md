@@ -37,7 +37,7 @@ Then install `k` and KEVM using `kup` (first time will take a while):
 
 ```sh
 kup install k
-kup install kevm --version anvacaru/set-symbolic
+kup install kevm --version
 ```
 
 For more detailed instructions about building KEVM from source, see [the KEVM repository](https://github.com/runtimeverification/evm-semantics).
@@ -57,18 +57,32 @@ In the [`src`](./src) subdirectory, you will find multiple files:
 - `IERC20Metadata.sol`, `IERC20.sol` and `Context.sol` are helper files of the ERC20 contract, imported from the same repository.
 - `KEVMCheats.sol`: The [KEVMCheats.sol](./src/utils/KEVMCheats.sol) contract interface contains functions which are only available to KEVM.
                     Running a test that contains these function calls with `forge` will result in a failure with the `invalid data` error.
+- `token.sol`: The file contains a simple token with two functionalities: mint and transfer tokens.
+  Thus, it makes sense to test that the transfer function works correctly.
+  I.e., that if a user `A` transfers `x` amount of tokens to a user `B`, `A`'s balance is decreased by `x` and `B`'s balance is increased by `x`.
+  This is the property that `token.t.sol` tests.
+- `exclusiveToken.sol`: The file `exclusiveToken.sol` contains a modified version of `token.sol`.
+  This contract can only mint tokens to addresses that hold some [alUSD](https://etherscan.io/token/0xbc6da0fe9ad5f3b0d58160288917aa56653660e9).
+  Hence, what the test `exclusiveToken.t.sol` checks is precisely this, that accounts with zero balance in the alUSD contract cannot be minted to, and the opposite for addresses that hold alUSD.
+  However, note that we don't have the source code of the alUSD token, and much less a file or something similar with the current state of alUSD on the blockchain.
+  Thus, we must use Foundry's extra capabilities to excercise the test correctly.
 
 ### Tests
 
 In the [`test`](./test) subdirectory, you will find tests of varying difficulty:
 
 - `ERC20.t.sol` - tests for the ERC20 functions.
+- `simple.t.sol`: Standalone tests of arithmetic functions, no dependencies on the `src` directory.
+- `token.t.sol`: Tests of `token.sol`.
+- `exclusiveToken.t.sol`: Tests of `exclusiveToken.t.sol`.
 
 Property Testing Using Foundry
 ------------------------------
 
-Foundry will be used to build the project.
-Aditionally, it could run the property tests on randomized inputs.
+We will use foundry for:
+
+- Building the project (i.e. compiling the files), and
+- Running the property tests on randomized inputs.
 
 ### Building the project
 
@@ -82,7 +96,26 @@ As simple as that.
 
 ### Running tests with Foundry
 
-Most of these tests are designed to work with symbolic execution and will most likely fail when used with Foundry.
+Since we have several different tests with different needs, we will tell Foundry which test to exercise.
+This is done with the options `--match` or `--match-path`, which match a string against the name of the test (executing all matches) or against the path of a file.
+If we only want to exercise the test contained in `token.t.sol`, we can do so by running the following command:
+
+The `-vvvv` option just indicates the verbosity of the output.
+It can go from being absent (verbosity 1) to five `v`'s (verbosity 5).
+For more details see [here](https://book.getfoundry.sh/forge/tests#logs-and-traces).
+
+We can also run the `exclusiveToken.t.sol` test.
+Running this test is the same as in the previous case, but the test requires an extra
+argument, `--fork-url`, to provide the URL of an RPC client such as Alchemy or Infura.
+
+```sh
+forge test -vvvv --fork-url <your_url> --match-path test/exclusiveToken.t.sol
+```
+
+If you wish to exercise all tests at once, you just have to omit the `--match-path` argument.
+But don't forget to add the `--fork-url`! Otherwise the test in `exclusiveToken.t.sol` won't be exercised.
+
+For ERC20, most of these tests are designed to work with symbolic execution and will most likely fail when used with Foundry.
 The main differences are that:
 
 1. We use [KEVMCheats.sol](./src/utils/KEVMCheats.sol), which are not implemented in `forge`.
@@ -97,22 +130,6 @@ As example, the following would reject all inputs in forge:
         assertEq(erc20.balanceOf(alice), amount);
     }
 ```
-
-
-Since we have several different tests with different needs, we will tell Foundry which test to exercise.
-This is done with the options `--match` or `--match-path`, which match a string against the name of the test (executing all matches) or against the path of a file.
-If we only want to exercise the test "testNameAndSymbol" in `ERC20.t.sol`, we can do so by running the following command:
-
-```sh
-forge test -vvvv --match-test testNameAndSymbol
-```
-
-The `-vvvv` option just indicates the verbosity of the output.
-It can go from being absent (verbosity 1) to five `v`'s (verbosity 5).
-For more details see [here](https://book.getfoundry.sh/forge/tests#logs-and-traces).
-
-If you wish to exercise all tests at once, you just have to omit the `--match-test` argument.
-
 Property Verification using KEVM
 --------------------------------
 
@@ -125,7 +142,7 @@ Be advised that these tests usually have a longer execution time (~20 mins to an
 First, we need to build the KEVM definition for this Foundry property test suite:
 
 ```sh
-kevm foundry-kompile
+kevm foundry-kompile --require ../../lemmas.k --module-import DEMO-LEMMAS
 ```
 
 When you are working, you may need to rebuild the definition in various ways.
@@ -135,10 +152,10 @@ For example:
 - If you add/modify K lemmas in `lemmas.k`, you need to rerun the above `foundry-kompile` command with the `--rekompile` option added.
 
 Once you have kompiled the definition, you can now run proofs!
-For example, to run some simple proofs from [`test/ERC20.t.sol`](test/ERC20.t.sol), you could do:
+For example, to run some simple proofs from [`test/simple.t.sol`](test/simple.t.sol), you could do:
 
 ```sh
-kevm foundry-prove --test ERC20Test.testNameAndSymbol --test ERC20Test.testTotalSupply -j2
+kevm foundry-prove --test Examples.test_assert_bool_failing --test Examples.test_assert_bool_passing -j2
 ```
 
 Notice you can use `--test ContractName.testName` to filter tests to run, and can use `-jN` to run listed proofs in parallel!
@@ -146,14 +163,14 @@ Notice you can use `--test ContractName.testName` to filter tests to run, and ca
 You can visualize the result of proofs using the following command:
 
 ```sh
-kevm foundry-view-kcfg ERC20Test.testName
+kevm foundry-view-kcfg Examples.test_assert_bool_failing
 ```
 
 This launches an interactive visualizer where you can click on individual nodes and edges in the generated KCFG (K Control Flow Graph) to inspect them.
 There is also static visualization you can use:
 
 ```sh
-kevm foundry-show ERC20Test.testName
+kevm foundry-show Examples.test_assert_bool_failing
 ```
 
 This command takes extra parameters if needed:
