@@ -7,6 +7,7 @@ import "forge-std/Test.sol";
 
 contract ERC20Test is Test, KEVMCheats {
 
+    uint256 constant MAX_INT = 2**256 - 1;
     bytes32 constant BALANCES_STORAGE_INDEX = 0;
     bytes32 constant ALLOWANCES_STORAGE_INDEX = bytes32(uint256(1));
     bytes32 constant TOTALSUPPLY_STORAGE_INDEX = bytes32(uint256(2));
@@ -146,38 +147,40 @@ contract ERC20Test is Test, KEVMCheats {
       symbolic
       unchangedStorage(storageSlot) {
         vm.assume(alice != address(0));
-        uint256 balanceA = erc20.balanceOf(alice);
-        vm.assume(balanceA >= amount);
+        uint256 balanceAlice = erc20.balanceOf(alice);
+        vm.assume(balanceAlice >= amount);
         vm.expectEmit(true, true, false, true);
         emit Transfer(alice, alice, amount);
         vm.startPrank(alice);
         erc20.transfer(alice, amount);
-        assertEq(erc20.balanceOf(alice), balanceA);
+        assertEq(erc20.balanceOf(alice), balanceAlice);
     }
 
-    function testTransferSuccess_1(address alice, address bob, uint256 amount)//, bytes32 storageSlot)
+    function testTransferSuccess_1(address alice, address bob, uint256 amount, bytes32 storageSlot)
       public
       initializer
       symbolic
-      //unchangedStorage(storageSlot)
+      unchangedStorage(storageSlot)
       {
-        //bytes32 storageLocationA = hashedLocation(alice, BALANCES_STORAGE_INDEX);
-        //bytes32 storageLocationB = hashedLocation(bob, BALANCES_STORAGE_INDEX);
+        bytes32 storageLocationAlice = hashedLocation(alice, BALANCES_STORAGE_INDEX);
+        bytes32 storageLocationBob = hashedLocation(bob, BALANCES_STORAGE_INDEX);
         //I'm expecting the storage to change for _balances[alice] and _balances[bob]
-        //vm.assume(storageLocationA != storageSlot);
-        //vm.assume(storageLocationB != storageSlot);
+        vm.assume(storageLocationAlice != storageSlot);
+        vm.assume(storageLocationBob != storageSlot);
         vm.assume(alice != address(0));
         vm.assume(bob != address(0));
         vm.assume(alice != bob);
-        uint256 balanceA = erc20.balanceOf(alice);
-        uint256 balanceB = erc20.balanceOf(bob);
-        vm.assume(balanceA >= amount);
+        vm.assume(storageLocationAlice != storageLocationBob);
+        uint256 balanceAlice = erc20.balanceOf(alice);
+        uint256 balanceBob = erc20.balanceOf(bob);
+        vm.assume(balanceAlice >= amount);
+        vm.assume(balanceBob <= MAX_INT - amount);
         vm.expectEmit(true, true, false, true);
         emit Transfer(alice, bob, amount);
         vm.startPrank(alice);
         erc20.transfer(bob, amount);
-        assertEq(erc20.balanceOf(alice), balanceA - amount);
-        assertEq(erc20.balanceOf(bob), balanceB + amount);
+        assertEq(erc20.balanceOf(alice), balanceAlice - amount);
+        assertEq(erc20.balanceOf(bob), balanceBob + amount);
     }
 
     /****************************

@@ -15,11 +15,11 @@ contract Examples is Test {
         z = (x * WAD) / y;
     }
 
-    function test_assert_bool_failing(bool b) public {
+    function test_assert_bool_failing(bool b) public pure {
         assert(b);
     }
 
-    function test_assert_bool_passing(bool b) public {
+    function test_assert_bool_passing(bool b) public pure {
         if (b) {
             assert(b);
         }
