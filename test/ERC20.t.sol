@@ -271,14 +271,18 @@ contract ERC20Test is Test, KEVMCheats {
         vm.assume(spender != address(0));
         vm.assume(owner != address(0));
         vm.assume(alice != address(0));
-        bytes32 storageLocationO = hashedLocation(owner, BALANCES_STORAGE_INDEX);
-        bytes32 storageLocationA = hashedLocation(alice, BALANCES_STORAGE_INDEX);
-        vm.assume(storageSlot != storageLocationO);
-        vm.assume(storageSlot != storageLocationA);
-        vm.assume(erc20.allowance(owner, spender) == type(uint256).max);
+        bytes32 storageLocationOwner = hashedLocation(owner, BALANCES_STORAGE_INDEX);
+        bytes32 storageLocationAlice = hashedLocation(alice, BALANCES_STORAGE_INDEX);
+        bytes32 storageLocationAllowance = hashedLocation(spender, hashedLocation(owner, ALLOWANCES_STORAGE_INDEX));
+        vm.assume(storageSlot != storageLocationOwner);
+        vm.assume(storageSlot != storageLocationAlice);
+        vm.assume(storageLocationAllowance != storageLocationOwner);
+        vm.assume(storageLocationAllowance != storageLocationAlice);
+        vm.assume(erc20.allowance(owner, spender) == MAX_INT);
         vm.assume(erc20.balanceOf(owner) >= amount);
         vm.startPrank(spender);
         erc20.transferFrom(owner, alice, amount);
+        assertEq(erc20.allowance(owner, spender), MAX_INT);
       }
 
     function testTransferFromSuccess_1(address spender, address owner, address alice, uint256 amount, bytes32 storageSlot)
