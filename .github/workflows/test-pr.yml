@@ -32,3 +32,30 @@ jobs:
         if: always()
         run: |
           docker stop --time=0 foundry-demo-ci-forge-${GITHUB_SHA}
+
+  test-prove:
+    name: 'Build and Test KEVM concrete execution'
+    needs: version-bump
+    runs-on: [self-hosted, linux, normal]
+    needs: forge-test
+    timeout-minutes: 90
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: 'Set up Docker'
+        uses: ./.github/actions/with-docker
+        with:
+          tag: foundry-demo-ci-kevm-${{ github.sha }}
+      - name: 'Forge build'
+        run: docker exec -u user foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'forge build'
+      - name: 'KEVM kompile'
+        run: docker exec -u user foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'kevm foundry-kompile --verbose'
+      - name: 'KEVM prove'
+        run: docker exec -u user foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'kevm foundry-prove --verbose -j8'
+      - name: 'Tear down Docker'
+        if: always()
+        run: |
+          docker stop --time=0 foundry-demo-ci-kevm-${GITHUB_SHA}
