@@ -1,0 +1,34 @@
+name: 'Test PR'
+on:
+  pull_request:
+    branches:
+      - 'master'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  test-forge:
+    name: 'Build and Test KEVM concrete execution'
+    needs: version-bump
+    runs-on: [self-hosted, linux, normal]
+    timeout-minutes: 25
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: 'Set up Docker'
+        uses: ./.github/actions/with-docker
+        with:
+          tag: foundry-demo-ci-forge-${{ github.sha }}
+      - name: 'Forge build'
+        run: docker exec -u user foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'forge build'
+      - name: 'Forge test'
+        run: docker exec -u user foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'forge test -vvv'
+      - name: 'Tear down Docker'
+        if: always()
+        run: |
+          docker stop --time=0 foundry-demo-ci-forge-${GITHUB_SHA}
