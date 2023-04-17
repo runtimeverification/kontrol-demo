@@ -36,7 +36,7 @@ jobs:
     name: 'Build and Test KEVM concrete execution'
     needs: version-bump
     runs-on: [self-hosted, linux, normal]
-    needs: forge-test
+    needs: test-forge
     timeout-minutes: 90
     steps:
       - name: 'Check out code'
