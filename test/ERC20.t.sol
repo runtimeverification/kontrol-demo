@@ -13,6 +13,12 @@ contract ERC20Test is Test, KEVMCheats {
     bytes32 constant TOTALSUPPLY_STORAGE_INDEX = bytes32(uint256(2));
     ERC20 erc20;
 
+    function notBuiltinAddress(address addr) internal {
+        vm.assume( addr != address(645326474426547203313410069153905908525362434349));
+        vm.assume( addr != address(728815563385977040452943777879061427756277306518));
+        vm.assume( addr != address(491460923342184218035706888008750043977755113263)); //deployed erc20 address.
+    }
+
     function hashedLocation(address _key, bytes32 _index) public pure returns(bytes32) {
         // Returns the index hash of the storage slot of a map at location `index` and the key `_key`.
         // returns `keccak(#buf(32,_key) +Bytes #buf(32, index))
@@ -95,6 +101,7 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        //notBuiltinAddress(addr);
         bytes32 storageLocation = hashedLocation(addr, BALANCES_STORAGE_INDEX); //compute the storage location of _balances[addr]
         uint256 balance = erc20.balanceOf(addr);
         uint256 storageValue = uint256(vm.load(address(erc20), storageLocation));
@@ -112,6 +119,7 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        //notBuiltinAddress(to);
         vm.startPrank(address(0));
         vm.expectRevert("ERC20: transfer from the zero address");
         erc20.transfer(to, value);
@@ -122,6 +130,7 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(from);
         vm.assume(from != address(0));
         vm.startPrank(address(from));
         vm.expectRevert("ERC20: transfer to the zero address");
@@ -133,6 +142,8 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(alice);
+        notBuiltinAddress(bob);
         vm.assume(alice != address(0));
         vm.assume(bob != address(0));
         vm.assume(erc20.balanceOf(alice) < amount);
@@ -146,6 +157,7 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(alice);
         vm.assume(alice != address(0));
         uint256 balanceAlice = erc20.balanceOf(alice);
         vm.assume(balanceAlice >= amount);
@@ -162,6 +174,8 @@ contract ERC20Test is Test, KEVMCheats {
       symbolic
       unchangedStorage(storageSlot)
       {
+        notBuiltinAddress(alice);
+        notBuiltinAddress(bob);
         bytes32 storageLocationAlice = hashedLocation(alice, BALANCES_STORAGE_INDEX);
         bytes32 storageLocationBob = hashedLocation(bob, BALANCES_STORAGE_INDEX);
         //I'm expecting the storage to change for _balances[alice] and _balances[bob]
@@ -194,6 +208,8 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(owner);
+        notBuiltinAddress(spender);
         bytes32 storageLocation = hashedLocation(spender, hashedLocation(owner, ALLOWANCES_STORAGE_INDEX));
         uint256 allowance = erc20.allowance(owner, spender);
         uint256 storageValue = uint256(vm.load(address(erc20), storageLocation));
@@ -211,6 +227,7 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(spender);
         vm.startPrank(address(0));
         vm.expectRevert("ERC20: approve from the zero address");
         erc20.approve(spender, amount);
@@ -221,6 +238,7 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(owner);
         vm.assume(owner != address(0));
         vm.startPrank(owner);
         vm.expectRevert("ERC20: approve to the zero address");
@@ -232,6 +250,9 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(owner);
+        notBuiltinAddress(spender);
+
         vm.assume(owner != address(0));
         vm.assume(spender != address(0));
         bytes32 storageLocation = hashedLocation(spender, hashedLocation(owner, ALLOWANCES_STORAGE_INDEX));
@@ -254,6 +275,9 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(spender);
+        notBuiltinAddress(owner);
+        notBuiltinAddress(alice);
         vm.assume(spender != address(0));
         vm.assume(owner != address(0));
         vm.assume(alice != address(0));
@@ -268,6 +292,9 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(spender);
+        notBuiltinAddress(owner);
+        notBuiltinAddress(alice);
         vm.assume(spender != address(0));
         vm.assume(owner != address(0));
         vm.assume(alice != address(0));
@@ -290,6 +317,9 @@ contract ERC20Test is Test, KEVMCheats {
       initializer
       symbolic
       unchangedStorage(storageSlot) {
+        notBuiltinAddress(spender);
+        notBuiltinAddress(owner);
+        notBuiltinAddress(alice);
         vm.assume(spender != address(0));
         vm.assume(owner != address(0));
         vm.assume(alice != address(0));
