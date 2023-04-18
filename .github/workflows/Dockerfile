@@ -42,3 +42,5 @@ RUN groupadd -g $GROUP_ID user && useradd -m -u $USER_ID -s /bin/sh -g user user
 
 USER user:user
 WORKDIR /home/user
+
+RUN bash <(curl https://kframework.org/install)
