@@ -24,9 +24,9 @@ jobs:
         with:
           tag: foundry-demo-ci-forge-${{ github.sha }}
       - name: 'Forge build'
-        run: docker exec -u user foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'forge build'
+        run: docker exec --tty foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'forge build'
       - name: 'Forge test'
-        run: docker exec -u user foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'forge test -vvv'
+        run: docker exec --tty foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'forge test -vvv'
       - name: 'Tear down Docker'
         if: always()
         run: |
@@ -48,11 +48,11 @@ jobs:
         with:
           tag: foundry-demo-ci-kevm-${{ github.sha }}
       - name: 'Forge build'
-        run: docker exec -u user foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'forge build'
+        run: docker exec --tty foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'forge build'
       - name: 'KEVM kompile'
-        run: docker exec -u user foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'kevm foundry-kompile --verbose'
+        run: docker exec --tty foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'kevm foundry-kompile --verbose'
       - name: 'KEVM prove'
-        run: docker exec -u user foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'kevm foundry-prove --verbose -j8'
+        run: docker exec --tty foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'kevm foundry-prove --verbose -j8'
       - name: 'Tear down Docker'
         if: always()
         run: |
