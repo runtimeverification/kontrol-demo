@@ -38,10 +38,4 @@ interface KEVMCheatsBase {
 
 abstract contract KEVMCheats {
     KEVMCheatsBase public constant kevm = KEVMCheatsBase(address(uint160(uint256(keccak256("hevm cheat code")))));
-
-    // Checks if an address matches one of the built-in addresses.
-    function notBuiltinAddress(address addr) internal pure returns (bool) {
-        return (addr != address(645326474426547203313410069153905908525362434349) &&
-                addr != address(1032069922050249630382865877677304880282300743300));
-    }
 }
