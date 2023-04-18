@@ -1,17 +1,24 @@
-ARG Z3_VERSION
 FROM ghcr.io/foundry-rs/foundry:nightly-aeba75e4799f1e11e3daba98d967b83e286b0c4a as FOUNDRY
 
 FROM ubuntu:jammy
 
-COPY --from=FOUNDRY /usr/local/bin/forge /usr/local/bin/forge
-COPY --from=FOUNDRY /usr/local/bin/anvil /usr/local/bin/anvil
-COPY --from=FOUNDRY /usr/local/bin/cast /usr/local/bin/cast
+ENV TZ America/Chicago
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN    apt-get update           \
     && apt-get upgrade --yes    \
     && apt-get install --yes    \
             curl                \
             sudo
+
+COPY --from=FOUNDRY /usr/local/bin/forge /usr/local/bin/forge
+COPY --from=FOUNDRY /usr/local/bin/anvil /usr/local/bin/anvil
+COPY --from=FOUNDRY /usr/local/bin/cast /usr/local/bin/cast
+
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 ARG USER=user
 ARG GROUP=${USER}
