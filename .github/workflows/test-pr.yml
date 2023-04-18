@@ -10,7 +10,7 @@ concurrency:
 jobs:
 
   test-forge:
-    name: 'Build and Test KEVM concrete execution'
+    name: 'Test with Foundry'
     runs-on: [self-hosted, linux, normal]
     timeout-minutes: 25
     steps:
@@ -33,7 +33,7 @@ jobs:
           docker stop --time=0 foundry-demo-ci-forge-${GITHUB_SHA}
 
   test-prove:
-    name: 'Build and Test KEVM concrete execution'
+    name: 'Verify with KEVM'
     needs: test-forge
     runs-on: [self-hosted, linux, normal]
     timeout-minutes: 90
