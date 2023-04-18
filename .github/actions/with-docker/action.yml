@@ -32,7 +32,5 @@ runs:
         --detach                        \
         --user ${USER}:${GROUP}         \
         -v "$(pwd):/opt/workspace"      \
-        -v "/etc/passwd:/etc/passwd:ro" \
-        -v "/etc/group:/etc/group:ro"   \
         --workdir /opt/workspace        \
         runtimeverification/${TAG_NAME} \
