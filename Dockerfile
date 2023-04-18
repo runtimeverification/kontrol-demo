@@ -24,8 +24,8 @@ RUN    groupadd -g ${GROUP_ID} ${USER} \
 
 RUN echo "${USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-USER user:user
-WORKDIR /home/user
+USER ${USER}:${GROUP}
+WORKDIR /home/${USER}
 
 RUN    curl -L https://foundry.paradigm.xyz | bash \
     && foundryup
