@@ -9,6 +9,7 @@ RUN    apt-get update           \
     && apt-get upgrade --yes    \
     && apt-get install --yes    \
             curl                \
+            locales             \
             sudo
 
 COPY --from=FOUNDRY /usr/local/bin/forge /usr/local/bin/forge
