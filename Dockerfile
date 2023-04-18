@@ -1,5 +1,3 @@
-FROM ghcr.io/foundry-rs/foundry:nightly-aeba75e4799f1e11e3daba98d967b83e286b0c4a as FOUNDRY
-
 FROM ubuntu:jammy
 
 ENV TZ America/Chicago
@@ -11,10 +9,6 @@ RUN    apt-get update           \
             curl                \
             locales             \
             sudo
-
-COPY --from=FOUNDRY /usr/local/bin/forge /usr/local/bin/forge
-COPY --from=FOUNDRY /usr/local/bin/anvil /usr/local/bin/anvil
-COPY --from=FOUNDRY /usr/local/bin/cast /usr/local/bin/cast
 
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -32,3 +26,6 @@ RUN echo "${USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER user:user
 WORKDIR /home/user
+
+RUN    curl -L https://foundry.paradigm.xyz | bash \
+    && foundryup
