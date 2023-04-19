@@ -1,19 +1,24 @@
+FROM ghcr.io/foundry-rs/foundry:nightly-aeba75e4799f1e11e3daba98d967b83e286b0c4a as FOUNDRY
+
 FROM ubuntu:jammy
 
 ENV TZ America/Chicago
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ENV DEBIAN_FRONTEND=noninteractive
+
+COPY --from=FOUNDRY /usr/local/bin/forge /usr/local/bin/forge
+COPY --from=FOUNDRY /usr/local/bin/anvil /usr/local/bin/anvil
+COPY --from=FOUNDRY /usr/local/bin/cast /usr/local/bin/cast
 
 RUN    apt-get update           \
     && apt-get upgrade --yes    \
     && apt-get install --yes    \
+            build-essential     \
             curl                \
-            locales             \
+            git                 \
+            python3             \
+            python3-pip         \
             sudo
-
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
 
 ARG USER=user
 ARG GROUP=${USER}

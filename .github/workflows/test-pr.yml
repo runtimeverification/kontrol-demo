@@ -23,8 +23,6 @@ jobs:
         uses: ./.github/actions/with-docker
         with:
           tag: foundry-demo-ci-forge-${{ github.sha }}
-      - name: 'Install Foundry'
-        run: docker exec foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'curl -L https://foundry.paradigm.xyz | bash && foundryup'
       - name: 'Forge build'
         run: docker exec foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'forge build'
       - name: 'Forge test'
@@ -49,8 +47,6 @@ jobs:
         uses: ./.github/actions/with-docker
         with:
           tag: foundry-demo-ci-kevm-${{ github.sha }}
-      - name: 'Install Foundry'
-        run: docker exec foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'curl -L https://foundry.paradigm.xyz | bash && foundryup'
       - name: 'Install KEVM'
         run: docker exec foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'curl -L https://kframework.org/install | bash && kup install kevm'
       - name: 'Forge build'
