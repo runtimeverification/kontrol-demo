@@ -5,7 +5,7 @@ set -euxo pipefail
 #### Get only the ERC20 tests in 'tests-to-run' using jq
 # jq '.ast.nodes[] | .name + "." + ( .nodes[].name | select(. |startswith("test")))' -r out/*.t.sol/*json | sort -u | grep -v -F -f exclude > tests-to-run
 
-time kevm foundry-kompile --with-llvm-library
+#time kevm foundry-kompile --with-llvm-library
 
 for TEST in $(cat tests-to-run); do
   echo "++++++++++++++++++++++++ $TEST +++++++++++++++++++++++++"
