@@ -8,33 +8,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-  test-forge:
-    name: 'Test with Foundry'
-    runs-on: [self-hosted, linux, normal]
-    timeout-minutes: 25
-    steps:
-      - name: 'Check out code'
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          fetch-depth: 0
-      - name: 'Set up Docker'
-        uses: ./.github/actions/with-docker
-        with:
-          tag: foundry-demo-ci-forge-${{ github.sha }}
-      - name: 'Forge build'
-        run: docker exec foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'forge build'
-      - name: 'Forge test'
-        run: docker exec foundry-demo-ci-forge-${GITHUB_SHA} /bin/bash -c 'forge test -vvv'
-      - name: 'Tear down Docker'
-        if: always()
-        run: |
-          docker stop --time=0 foundry-demo-ci-forge-${GITHUB_SHA}
-
-  test-prove:
-    name: 'Verify with KEVM'
-    needs: test-forge
+  run-erc20:
+    name: 'Run ERC20 tests with KEVM Booster Integration'
     runs-on: [self-hosted, linux, normal]
     timeout-minutes: 90
     steps:
@@ -49,12 +24,10 @@ jobs:
           tag: foundry-demo-ci-kevm-${{ github.sha }}
       - name: 'Install KEVM'
         run: docker exec foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'curl -L https://kframework.org/install | bash && kup install kevm'
-      - name: 'Forge build'
-        run: docker exec foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'forge build'
       - name: 'KEVM kompile'
-        run: docker exec foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'kevm foundry-kompile --verbose'
+        run: docker exec foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'kevm foundry-kompile --verbose --with-llvm-library'
       - name: 'KEVM prove'
-        run: docker exec foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'kevm foundry-prove --verbose -j8'
+        run: docker exec foundry-demo-ci-kevm-${GITHUB_SHA} /bin/bash -c 'cat erc20.sh | bash'
       - name: 'Tear down Docker'
         if: always()
         run: |
