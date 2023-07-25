@@ -1,0 +1,11 @@
+ExclusiveTokenTest.testMint
+Examples.test_assert_bool_failing
+Examples.test_assert_bool_passing
+Examples.test_wmul_increasing_overflow
+Examples.test_wmul_increasing
+Examples.test_wmul_increasing_positive
+Examples.test_wmul_increasing_gt_one
+Examples.test_wmul_weakly_increasing_positive
+Examples.test_wmul_wdiv_inverse_underflow
+Examples.test_wmul_wdiv_inverse
+TokenTest.testTransfer

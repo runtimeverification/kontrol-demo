@@ -142,7 +142,7 @@ Be advised that these tests usually have a longer execution time (~20 mins to an
 First, we need to build the KEVM definition for this Foundry property test suite:
 
 ```sh
-kevm foundry-kompile --require lemmas.k --module-import DEMO-LEMMAS
+kevm foundry-kompile --require lemmas.k --module-import ERC20:DEMO-LEMMAS
 ```
 
 When you are working, you may need to rebuild the definition in various ways.

@@ -11,12 +11,19 @@ contract ERC20Test is Test, KEVMCheats {
     bytes32 constant BALANCES_STORAGE_INDEX = 0;
     bytes32 constant ALLOWANCES_STORAGE_INDEX = bytes32(uint256(1));
     bytes32 constant TOTALSUPPLY_STORAGE_INDEX = bytes32(uint256(2));
+    address constant DEPLOYED_ERC20 = address(491460923342184218035706888008750043977755113263);
+    address constant FOUNDRY_TEST_CONTRACT = address(728815563385977040452943777879061427756277306518);
+    address constant FOUNDRY_CHEAT_CODE = address(645326474426547203313410069153905908525362434349);
+
     ERC20 erc20;
 
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
     function notBuiltinAddress(address addr) internal {
-        vm.assume( addr != address(645326474426547203313410069153905908525362434349));
-        vm.assume( addr != address(728815563385977040452943777879061427756277306518));
-        vm.assume( addr != address(491460923342184218035706888008750043977755113263)); //deployed erc20 address.
+        vm.assume( addr != FOUNDRY_CHEAT_CODE);
+        vm.assume( addr != FOUNDRY_TEST_CONTRACT);
+        vm.assume( addr != DEPLOYED_ERC20);
     }
 
     function hashedLocation(address _key, bytes32 _index) public pure returns(bytes32) {
@@ -25,12 +32,8 @@ contract ERC20Test is Test, KEVMCheats {
         return keccak256(abi.encode(_key, _index));
     }
 
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-
-    modifier initializer() {
+    function setUp() public {
         erc20 = new ERC20("Token Example", "TKN");
-        _;
     }
 
     modifier symbolic() {
@@ -54,7 +57,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testDecimals(bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         assertEq(erc20.decimals(), 18);
@@ -68,7 +70,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testNameAndSymbol(bytes32 storageSlot)
       public
-      initializer
       unchangedStorage(storageSlot) {
         assertEq(erc20.symbol(), "TKN");
         assertEq(erc20.name(), "Token Example");
@@ -82,7 +83,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testTotalSupply(bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         uint256 totalSupply = erc20.totalSupply();
@@ -98,11 +98,10 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testBalanceOf(address addr, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
-        //notBuiltinAddress(addr);
-        bytes32 storageLocation = hashedLocation(addr, BALANCES_STORAGE_INDEX); //compute the storage location of _balances[addr]
+        //compute the storage location of _balances[addr]
+        bytes32 storageLocation = hashedLocation(addr, BALANCES_STORAGE_INDEX);
         uint256 balance = erc20.balanceOf(addr);
         uint256 storageValue = uint256(vm.load(address(erc20), storageLocation));
         assertEq(balance, storageValue);
@@ -116,10 +115,8 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testTransferFailure_0(address to, uint256 value, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
-        //notBuiltinAddress(to);
         vm.startPrank(address(0));
         vm.expectRevert("ERC20: transfer from the zero address");
         erc20.transfer(to, value);
@@ -127,7 +124,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testTransferFailure_1(address from, uint256 value, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(from);
@@ -139,7 +135,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testTransferFailure_2(address alice, address bob, uint256 amount, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(alice);
@@ -154,7 +149,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testTransferSuccess_0(address alice, uint256 amount, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(alice);
@@ -170,7 +164,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testTransferSuccess_1(address alice, address bob, uint256 amount, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot)
       {
@@ -205,7 +198,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testAllowance(address owner, address spender, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(owner);
@@ -224,7 +216,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testApproveFailure_0(address spender, uint256 amount, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(spender);
@@ -235,7 +226,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testApproveFailure_1(address owner, uint256 amount, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(owner);
@@ -247,7 +237,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testApproveSuccess(address owner, address spender, uint256 amount, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(owner);
@@ -272,7 +261,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testTransferFromFailure(address spender, address owner, address alice, uint256 amount, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(spender);
@@ -289,7 +277,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testTransferFromSuccess_0(address spender, address owner, address alice, uint256 amount, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(spender);
@@ -314,7 +301,6 @@ contract ERC20Test is Test, KEVMCheats {
 
     function testTransferFromSuccess_1(address spender, address owner, address alice, uint256 amount, bytes32 storageSlot)
       public
-      initializer
       symbolic
       unchangedStorage(storageSlot) {
         notBuiltinAddress(spender);
