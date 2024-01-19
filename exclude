@@ -8,4 +8,3 @@ Examples.test_wmul_increasing_gt_one
 Examples.test_wmul_weakly_increasing_positive
 Examples.test_wmul_wdiv_inverse_underflow
 Examples.test_wmul_wdiv_inverse
-TokenTest.testTransfer

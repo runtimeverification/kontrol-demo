@@ -45,9 +45,11 @@ Repository contents
 -------------------
 
 This repository contains the OpenZeppelin ERC20 (took from the latest commit at that time, `1a60b061d5bb809c3d7e4ee915c77a00b1eca95d`) and the associated property tests.
-See the [`src`](./src) directory for the Solidity source code.
-See the [`test`](./test) directory for the Foundry property tests.
-
+- the [`src`](./src) directory contains the Solidity source code.
+- the [`test`](./test) directory contains the Foundry property tests.
+- the [`exclude`](./exclude) file contains proofs that are expected to fail.
+- the [`doit`](./doit) file contains examples of Kontrol commands that you can use.
+- the [`erc20.sh`](./erc20.sh) file contains a script that runs all the ERC20 proofs and times them.
 ### Contracts
 
 In the [`src`](./src) subdirectory, you will find multiple files:
@@ -117,7 +119,7 @@ But don't forget to add the `--fork-url`! Otherwise the test in `exclusiveToken.
 For ERC20, most of these tests are designed to work with symbolic execution and will most likely fail when used with Foundry.
 The main differences are that:
 
-1. We use [KEVMCheats.sol](./src/utils/KEVMCheats.sol), which are not implemented in `forge`.
+1. We use [KontrolCheats.sol](./lib/kontrol-cheatcodes/src/KontrolCheats.sol), which are not implemented in `forge`.
 2. We use `vm.assume` to set a precondition or an assumption, instead of filtering input values.
 As example, the following would reject all inputs in forge:
 
