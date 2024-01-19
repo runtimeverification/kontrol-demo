@@ -4,6 +4,7 @@ First Steps
 This repository contains a suite of property tests tailored for the OpenZeppelin ERC20 Solidity smart contract.
 It also includes a very basic Foundry set up ready to be your first steps into the toolchain.
 
+For kontrol documentation and more examples check [docs.runtimeverification.com/kontrol/](https://docs.runtimeverification.com/kontrol/).
 Follow the instructions below to run your first property tests using [KONTROL!](https://github.com/runtimeverification/kontrol).
 Note that the instructions are for linux systems.
 However, they should be reproducible on Windows using the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/).
@@ -50,6 +51,7 @@ This repository contains the OpenZeppelin ERC20 (took from the latest commit at 
 - the [`exclude`](./exclude) file contains proofs that are expected to fail.
 - the [`doit`](./doit) file contains examples of Kontrol commands that you can use.
 - the [`erc20.sh`](./erc20.sh) file contains a script that runs all the ERC20 proofs and times them.
+
 ### Contracts
 
 In the [`src`](./src) subdirectory, you will find multiple files:
@@ -136,7 +138,7 @@ Property Verification using KEVM
 
 With kontrol installed, you'll also have the option to do property verification!
 This is a big step up in assurance from property testing, but is more computationally expensive, and often requires manual intervention.
-Be advised that these tests usually have a longer execution time (~20 mins to an hour and a half), depending on the machine and the complexity of the test.
+Be advised that these tests usually have a longer execution time (from a few mins up to an hour and a half), depending on the machine and the complexity of the test.
 
 ### Build with kontrol
 
