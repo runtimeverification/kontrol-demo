@@ -58,8 +58,6 @@ In the [`src`](./src) subdirectory, you will find multiple files:
 
 - `ERC20.sol`: The file contains the base ERC20 token Solidity contract from [Open Zeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20).
 - `IERC20Metadata.sol`, `IERC20.sol` and `Context.sol` are helper files of the ERC20 contract, imported from the same repository.
-- `KEVMCheats.sol`: The [KEVMCheats.sol](./src/utils/KEVMCheats.sol) contract interface contains functions which are only available to `kontrol`.
-                    Running a test that contains these function calls with `forge` will result in a failure with the `invalid data` error.
 - `token.sol`: The file contains a simple token with two functionalities: mint and transfer tokens.
   Thus, it makes sense to test that the transfer function works correctly.
   I.e., that if a user `A` transfers `x` amount of tokens to a user `B`, `A`'s balance is decreased by `x` and `B`'s balance is increased by `x`.

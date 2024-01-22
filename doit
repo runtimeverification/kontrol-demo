@@ -45,7 +45,7 @@ kontrol_step_node() {
 
 kontrol_section_edge() {
     edge_id="$1" ; shift
-    kevm foundry-section-edge ${verbose} ${test} ${edge_id} ${bug_report} "$@"
+    kontrol section-edge ${verbose} ${test} ${edge_id} ${bug_report} "$@"
 }
 
 #test=Examples.test_assert_bool_failing
@@ -110,16 +110,3 @@ kontrol_prove -j9                                              \
 # date
 # kontrol_prove --reinit
 # date
-
-
-definition=tests/specs/benchmarks/verification/haskell
-verification_file=tests/specs/benchmarks/verification.k
-spec_file=tests/specs/benchmarks/address00-spec.k
-kcfgs_dir=kcfgs
-
-# rm -rf ${kcfgs_dir}
-# poetry update -C ./kevm-pyk
-# make build-kevm
-# do_kompile
-# do_prove
-# do_view
