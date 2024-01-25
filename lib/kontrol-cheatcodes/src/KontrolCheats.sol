@@ -2,16 +2,7 @@
 pragma solidity >=0.6.2 <0.9.0;
 pragma experimental ABIEncoderV2;
 
-/**
- * @dev Provides special functions that will modify the internal state
- * of the EVM when invoked. These functions are only supported by the
- * KEVM semantics (yet), and are not supported by `forge`.
-
- * The KEVM execution will intercept calls to the `kevm` address and
- * will modify the state according to the called function.
- */
-
-interface KEVMCheatsBase {
+interface KontrolCheatsBase {
     // Expects a call using the CALL opcode to an address with the specified calldata.
     function expectRegularCall(address,bytes calldata) external;
     // Expects a call using the CALL opcode to an address with the specified msg.value and calldata.
@@ -32,10 +23,22 @@ interface KEVMCheatsBase {
     function allowCallsToAddress(address) external;
     // Adds an address and a storage slot to the whitelist.
     function allowChangesToStorage(address,uint256) external;
-    // Set the current <gas> cell
+    // Sets the remaining gas to an infinite value.
     function infiniteGas() external;
+    // Sets the current <gas> cell to the supplied amount.
+    function setGas(uint256) external;
+    // Returns a symbolic unsigned integer
+    function freshUInt(uint8) external returns (uint256);
+    // Returns a symbolic boolean value
+    function freshBool() external returns (uint256);
 }
 
-abstract contract KEVMCheats {
-    KEVMCheatsBase public constant kevm = KEVMCheatsBase(address(uint160(uint256(keccak256("hevm cheat code")))));
+abstract contract KontrolCheats {
+    KontrolCheatsBase public constant kevm = KontrolCheatsBase(address(uint160(uint256(keccak256("hevm cheat code")))));
+
+    // Checks if an address matches one of the built-in addresses.
+    function notBuiltinAddress(address addr) internal pure returns (bool) {
+        return (addr != address(645326474426547203313410069153905908525362434349) &&
+                addr != address(728815563385977040452943777879061427756277306518));
+    }
 }

@@ -4,7 +4,8 @@ First Steps
 This repository contains a suite of property tests tailored for the OpenZeppelin ERC20 Solidity smart contract.
 It also includes a very basic Foundry set up ready to be your first steps into the toolchain.
 
-Follow the instructions below to run your first property tests using [KEVM!](https://github.com/runtimeverification/evm-semantics).
+For kontrol documentation and more examples check [docs.runtimeverification.com/kontrol/](https://docs.runtimeverification.com/kontrol/).
+Follow the instructions below to run your first property tests using [KONTROL!](https://github.com/runtimeverification/kontrol).
 Note that the instructions are for linux systems.
 However, they should be reproducible on Windows using the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/).
 
@@ -23,31 +24,33 @@ Then, run `foundryup` in a new terminal session or after reloading your `PATH`.
 
 For other installation methods, go to the [Foundry repository](https://github.com/foundry-rs/foundry/).
 
-Installing KEVM
----------------
+Installing KONTROL
+------------------
 
-The simplest way to install KEVM is via the [`kup` tool](https://github.com/runtimeverification/kup).
+The simplest way to install kontrol is via the [`kup` tool](https://github.com/runtimeverification/kup).
 Install `kup`:
 
 ```sh
 bash <(curl https://kframework.org/install)
 ```
 
-Then install `k` and KEVM using `kup` (first time will take a while):
+Then install `kontrol` using `kup` (first time will take a while):
 
 ```sh
-kup install k
-kup install kevm --version
+kup install kontrol
 ```
 
-For more detailed instructions about building KEVM from source, see [the KEVM repository](https://github.com/runtimeverification/evm-semantics).
+For more detailed instructions about building Kontrol from source, see [the Kontrol repository](https://github.com/runtimeverification/kontrol).
 
 Repository contents
 -------------------
 
 This repository contains the OpenZeppelin ERC20 (took from the latest commit at that time, `1a60b061d5bb809c3d7e4ee915c77a00b1eca95d`) and the associated property tests.
-See the [`src`](./src) directory for the Solidity source code.
-See the [`test`](./test) directory for the Foundry property tests.
+- the [`src`](./src) directory contains the Solidity source code.
+- the [`test`](./test) directory contains the Foundry property tests.
+- the [`exclude`](./exclude) file contains proofs that are expected to fail.
+- the [`doit`](./doit) file contains examples of Kontrol commands that you can use.
+- the [`erc20.sh`](./erc20.sh) file contains a script that runs all the ERC20 proofs and times them.
 
 ### Contracts
 
@@ -55,8 +58,6 @@ In the [`src`](./src) subdirectory, you will find multiple files:
 
 - `ERC20.sol`: The file contains the base ERC20 token Solidity contract from [Open Zeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20).
 - `IERC20Metadata.sol`, `IERC20.sol` and `Context.sol` are helper files of the ERC20 contract, imported from the same repository.
-- `KEVMCheats.sol`: The [KEVMCheats.sol](./src/utils/KEVMCheats.sol) contract interface contains functions which are only available to KEVM.
-                    Running a test that contains these function calls with `forge` will result in a failure with the `invalid data` error.
 - `token.sol`: The file contains a simple token with two functionalities: mint and transfer tokens.
   Thus, it makes sense to test that the transfer function works correctly.
   I.e., that if a user `A` transfers `x` amount of tokens to a user `B`, `A`'s balance is decreased by `x` and `B`'s balance is increased by `x`.
@@ -118,7 +119,7 @@ But don't forget to add the `--fork-url`! Otherwise the test in `exclusiveToken.
 For ERC20, most of these tests are designed to work with symbolic execution and will most likely fail when used with Foundry.
 The main differences are that:
 
-1. We use [KEVMCheats.sol](./src/utils/KEVMCheats.sol), which are not implemented in `forge`.
+1. We use [KontrolCheats.sol](./lib/kontrol-cheatcodes/src/KontrolCheats.sol), which are not implemented in `forge`.
 2. We use `vm.assume` to set a precondition or an assumption, instead of filtering input values.
 As example, the following would reject all inputs in forge:
 
@@ -133,44 +134,51 @@ As example, the following would reject all inputs in forge:
 Property Verification using KEVM
 --------------------------------
 
-With KEVM installed, you'll also have the option to do property verification!
+With kontrol installed, you'll also have the option to do property verification!
 This is a big step up in assurance from property testing, but is more computationally expensive, and often requires manual intervention.
-Be advised that these tests usually have a longer execution time (~20 mins to an hour and a half), depending on the machine and the complexity of the test.
+Be advised that these tests usually have a longer execution time (from a few mins up to an hour and a half), depending on the machine and the complexity of the test.
 
-### Build KEVM Definition
+### Build with kontrol
 
-First, we need to build the KEVM definition for this Foundry property test suite:
+First, we need to build a K definition for this Foundry property test suite:
 
 ```sh
-kevm foundry-kompile --require lemmas.k --module-import ERC20:DEMO-LEMMAS
+kontrol build --require lemmas.k --module-import ERC20:DEMO-LEMMAS
 ```
 
 When you are working, you may need to rebuild the definition in various ways.
 For example:
 
-- If you change the Solidity code, you need to re-run `forge build`, and then run the above `foundry-kompile` command again with the option `--regen` added.
-- If you add/modify K lemmas in `lemmas.k`, you need to rerun the above `foundry-kompile` command with the `--rekompile` option added.
+- If you change the Solidity code, you need to re-run the above `build` command with the option `--regen` added.
+- If you add/modify K lemmas in `lemmas.k`, you need to rerun the above `build` command with the `--rekompile` option added.
 
 Once you have kompiled the definition, you can now run proofs!
 For example, to run some simple proofs from [`test/simple.t.sol`](test/simple.t.sol), you could do:
 
 ```sh
-kevm foundry-prove --test Examples.test_assert_bool_failing --test Examples.test_assert_bool_passing -j2
+kontrol prove --match-test Examples.test_assert_bool_failing --match-test Examples.test_assert_bool_passing -j2
 ```
 
-Notice you can use `--test ContractName.testName` to filter tests to run, and can use `-jN` to run listed proofs in parallel!
+Notice you can use `--match-test ContractName.testName` to filter tests to run, and can use `-jN` to run listed proofs in parallel!
+
+
+You can list the status of the proofs with:
+
+```sh
+kontrol list
+```
 
 You can visualize the result of proofs using the following command:
 
 ```sh
-kevm foundry-view-kcfg Examples.test_assert_bool_failing
+kontrol view-kcfg Examples.test_assert_bool_failing
 ```
 
 This launches an interactive visualizer where you can click on individual nodes and edges in the generated KCFG (K Control Flow Graph) to inspect them.
 There is also static visualization you can use:
 
 ```sh
-kevm foundry-show Examples.test_assert_bool_failing
+kontrol show Examples.test_assert_bool_failing
 ```
 
 This command takes extra parameters if needed:

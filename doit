@@ -1,85 +1,52 @@
 set -euxo pipefail
-export PATH=$(pwd)/.build/usr/bin:$PATH
-export PATH=$(pwd)/../hs-backend-booster/.build/kore/bin:$PATH
 
-poetry_run() {
-    poetry -C ./kevm-pyk -- run "$@"
+kontrol_build() {
+    kontrol build --require lemmas.k --module-import ERC20:DEMO-LEMMAS \
+            ${verbose}
 }
 
-# you made changes to KEVM and want to restart
-forge_build() {
-    rm -rf ${foundry_out}
-    (   cd $(dirname ${foundry_out})
-        forge build
-    )
+kontrol_prove() {
+    kontrol prove ${verbose}     \ 
+            ${break_on_calls}    \
+            ${bug_report}        \
+            ${fail_fast} "$@"
 }
 
-kompile_foundry() {
-    kevm kompile --backend foundry             \
-        .build/usr/lib/kevm/include/kframework/foundry.md \
-        --main-module FOUNDRY                             \
-        --syntax-module FOUNDRY                           \
-        --pyk --verbose --profile
+kontrol_show() {
+    kontrol show ${verbose} ${test} "$@"
 }
 
-foundry_kompile() {
-    kevm foundry-kompile ${verbose} ${foundry_out} "$@"
+kontrol_to_dot() {
+    kontrol to-dot ${verbose} ${test} "$@"
 }
 
-foundry_prove() {
-    kevm foundry-prove ${verbose} ${foundry_out} ${break_on_calls} "$@"
+kontrol_view() {
+    kontrol view-kcfg ${verbose} ${test} "$@"
 }
 
-foundry_show() {
-    kevm foundry-show ${verbose} ${foundry_out} ${test} "$@"
+kontrol_list() {
+    kontrol list ${verbose} "$@"
 }
 
-foundry_to_dot() {
-    kevm foundry-to-dot ${verbose} ${foundry_out} ${test} "$@"
-}
-
-foundry_view() {
-    kevm foundry-view-kcfg ${verbose} ${foundry_out} ${test} "$@"
-}
-
-foundry_list() {
-    kevm foundry-list ${verbose} ${foundry_out}
-}
-
-foundry_remove_node() {
+kontrol_remove_node() {
     node_id="$1" ; shift
-    kevm foundry-remove-node ${verbose} ${foundry_out} ${test} ${node_id} "$@"
+    kontrol remove-node ${verbose} ${test} ${node_id} "$@"
 }
 
-foundry_simplify_node() {
+kontrol_simplify_node() {
     node_id="$1" ; shift
-    kevm foundry-simplify-node ${verbose} ${foundry_out} ${test} ${node_id} "$@"
+    kontrol simplify-node ${verbose} ${test} ${node_id} ${bug_report} "$@"
 }
 
-foundry_step_node() {
+kontrol_step_node() {
     node_id="$1" ; shift
-    kevm foundry-step-node ${verbose} ${foundry_out} ${test} ${node_id} "$@"
+    kontrol step-node ${verbose} ${test} ${node_id} ${bug_report} "$@"
 }
 
-foundry_section_edge() {
+kontrol_section_edge() {
     edge_id="$1" ; shift
-    kevm foundry-section-edge ${verbose} ${foundry_out} ${test} ${edge_id} "$@"
+    kontrol section-edge ${verbose} ${test} ${edge_id} ${bug_report} "$@"
 }
-
-do_kompile() {
-    kevm kompile --pyk --backend haskell ${verification_file} --definition ${definition} \
-        --main-module VERIFICATION --syntax-module VERIFICATION
-}
-
-do_prove() {
-    kevm prove ${spec_file} --definition ${definition} --pyk ${verbose} --save-directory ${kcfgs_dir}
-}
-
-do_view() {
-    kevm view-kcfg ${verbose} ${kcfgs_dir} ${spec_file} --definition ${definition}
-}
-
-foundry_out=out
 
 #test=Examples.test_assert_bool_failing
 #test=Examples.test_assert_bool_passing
@@ -94,64 +61,52 @@ foundry_out=out
 verbose=
 verbose=--verbose
 
+break_on_calls=--break-on-calls
 break_on_calls=
-break_on_calls=--no-break-on-calls
+
+bug_report=--bug-report
+bug_report=
 
 # Uncomment these lines as needed
 # pkill kore-rpc || true
-# make build-foundry -j2
-# forge_build
-# foundry_kompile --rekompile --regen
-# foundry_list
-# foundry_remove_node 4b6c47..d6d6d3
-foundry_prove -j9                                        \
-    --test Examples.test_assert_bool_failing             \
-    --test Examples.test_assert_bool_passing             \
-    --test Examples.test_wmul_increasing_overflow        \
-    --test Examples.test_wmul_increasing                 \
-    --test Examples.test_wmul_increasing_positive        \
-    --test Examples.test_wmul_increasing_gt_one          \
-    --test Examples.test_wmul_weakly_increasing_positive \
-    --test Examples.test_wmul_wdiv_inverse_underflow     \
-    --test Examples.test_wmul_wdiv_inverse
-# foundry_prove --reinit --use-booster
-# foundry_section_edge --sections 4 d38e0e..ee4ec8,593be8..e93e52
-# foundry_show # --no-minimize --node 35880c..e4389e --node 17e757..6c2e55
-# foundry_view --verbose
-# for test in AccountParamsTest.testDealConcrete AccountParamsTest.testDealSymbolic AccountParamsTest.testEtchConcrete AccountParamsTest.testFail_GetNonce_true AccountParamsTest.testNonceSymbolic AccountParamsTest.test_GetNonce_true AccountParamsTest.test_Nonce_ExistentAddress AccountParamsTest.test_Nonce_NonExistentAddress AddrTest.test_notBuiltinAddress_concrete AddrTest.test_notBuiltinAddress_symbolic AllowChangesTest.testAllow AllowChangesTest.testFailAllowCallsToAddress AllowChangesTest.testFailAllowChangesToStorage ArithmeticTest.test_max1 ArithmeticTest.test_max2 AssumeTest.test_assume_staticCall AssumeTest.test_assume_true AssumeTest.test_multi_assume BlockParamsTest.testChainId BlockParamsTest.testCoinBase BlockParamsTest.testFee BlockParamsTest.testRoll BlockParamsTest.testWarp EmitContractTest.testExpectEmit EmitContractTest.testExpectEmitCheckEmitter EmitContractTest.testExpectEmitDoNotCheckData ExpectCallTest.testExpectRegularCall ExpectCallTest.testExpectStaticCall ExpectRevertTest.testFail_ExpectRevert_failAndSuccess ExpectRevertTest.testFail_expectRevert_empty ExpectRevertTest.testFail_expectRevert_false ExpectRevertTest.testFail_expectRevert_multipleReverts ExpectRevertTest.test_ExpectRevert_increasedDepth ExpectRevertTest.test_expectRevert_internalCall ExpectRevertTest.test_expectRevert_message ExpectRevertTest.test_expectRevert_true GasTest.testInfiniteGas LabelTest.testLabel PlainPrankTest.testFail_startPrank_internalCall PlainPrankTest.test_prank_zeroAddress_true PlainPrankTest.test_startPrankWithOrigin_true PlainPrankTest.test_startPrank_true PlainPrankTest.test_startPrank_zeroAddress_true PlainPrankTest.test_stopPrank_notExistent AssertTest.test_assert_true_branch AssertTest.test_source_map StoreTest.testGasLoadColdVM StoreTest.testGasLoadWarmUp StoreTest.testGasStoreColdVM StoreTest.testGasStoreWarmUp StoreTest.testLoadNonExistent StoreTest.testStoreLoad StoreTest.testStoreLoadNonExistent SymbolicStorageTest.testFail_SymbolicStorage SymbolicStorageTest.testFail_SymbolicStorage1 BytesTypeTest.test_bytes32 BytesTypeTest.test_bytes4 UintTypeTest.test_uint256; do
-#     foundry_to_dot
+kontrol_build --rekompile --regen
+# kontrol_list
+# kontrol_remove_node 4b6c47..d6d6d3
+kontrol_prove -j9                                              \
+    --match-test Examples.test_assert_bool_failing             \
+    --match-test Examples.test_assert_bool_passing             \
+    --match-test Examples.test_wmul_increasing_overflow        \
+    --match-test Examples.test_wmul_increasing                 \
+    --match-test Examples.test_wmul_increasing_positive        \
+    --match-test Examples.test_wmul_increasing_gt_one          \
+    --match-test Examples.test_wmul_weakly_increasing_positive \
+    --match-test Examples.test_wmul_wdiv_inverse_underflow     \
+    --match-test Examples.test_wmul_wdiv_inverse
+# kontrol_prove --reinit
+# kontrol_section_edge --sections 4 d38e0e..ee4ec8,593be8..e93e52
+# kontrol_show # --no-minimize --node 35880c..e4389e --node 17e757..6c2e55
+# kontrol_view
+# for test in ERC20Test.testAllowance ERC20Test.testApproveFailure_0 ERC20Test.testApproveFailure_1 ERC20Test.testApproveSuccess ERC20Test.testBalanceOf ERC20Test.testDecimals ERC20Test.testNameAndSymbol ERC20Test.testTotalSupply ERC20Test.testTransferFailure_0 ERC20Test.testTransferFailure_1 ERC20Test.testTransferFailure_2 ERC20Test.testTransferFromFailure ERC20Test.testTransferFromSuccess_0 ERC20Test.testTransferFromSuccess_1 ERC20Test.testTransferSuccess_0 ERC20Test.testTransferSuccess_1; do
+#     kontrol_to_dot
 # done
 
 # test=AssertTest.test_sum_10
 # date
-# foundry_prove --no-break-on-calls --reinit
+# kontrol_prove --reinit
 # date
-# foundry_prove --no-break-on-calls --reinit --use-booster
+# kontrol_prove --reinit
 # date
 # 
 # test=AssertTest.test_sum_100
 # date
-# foundry_prove --no-break-on-calls --reinit
+# kontrol_prove --reinit
 # date
-# foundry_prove --no-break-on-calls --reinit --use-booster
+# kontrol_prove --reinit
 # date
 # 
 # test=AssertTest.test_sum_1000
 # date
-# foundry_prove --no-break-on-calls --reinit
+# kontrol_prove --reinit
 # date
-# foundry_prove --no-break-on-calls --reinit --use-booster
+# kontrol_prove --reinit
 # date
-
-
-definition=tests/specs/benchmarks/verification/haskell
-verification_file=tests/specs/benchmarks/verification.k
-spec_file=tests/specs/benchmarks/address00-spec.k
-kcfgs_dir=kcfgs
-
-# rm -rf ${kcfgs_dir}
-# poetry update -C ./kevm-pyk
-# make build-kevm
-# do_kompile
-# do_prove
-# do_view
