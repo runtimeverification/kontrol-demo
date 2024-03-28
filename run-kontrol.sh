@@ -62,10 +62,10 @@ verbose=
 verbose=--verbose
 
 break_on_calls=--break-on-calls
-break_on_calls=
+# break_on_calls=
 
 bug_report=--bug-report
-bug_report=
+# bug_report=
 
 # Uncomment these lines as needed
 # pkill kore-rpc || true
@@ -101,7 +101,7 @@ kontrol_prove -j9                                              \
 # date
 # kontrol_prove --reinit
 # date
-# kontrol_prove --reinit
+# kontrol_prove --reinitf
 # date
 # 
 # test=AssertTest.test_sum_1000

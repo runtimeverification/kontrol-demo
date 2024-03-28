@@ -49,7 +49,7 @@ This repository contains the OpenZeppelin ERC20 (took from the latest commit at 
 - the [`src`](./src) directory contains the Solidity source code.
 - the [`test`](./test) directory contains the Foundry property tests.
 - the [`exclude`](./exclude) file contains proofs that are expected to fail.
-- the [`doit`](./doit) file contains examples of Kontrol commands that you can use.
+- the [`run-kontrol.sh`](./run-kontrol.sh) file contains examples of Kontrol commands that you can use.
 - the [`erc20.sh`](./erc20.sh) file contains a script that runs all the ERC20 proofs and times them.
 
 ### Contracts

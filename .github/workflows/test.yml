@@ -1,4 +1,4 @@
-name: test
+name: Kontrol CI Demo
 
 on: workflow_dispatch
 
@@ -10,25 +10,18 @@ jobs:
     strategy:
       fail-fast: true
 
-    name: Foundry project
-    runs-on: ubuntu-latest
+    name: Kontrol Demo Project
+    runs-on: [self-hosted, linux, normal]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+      - name: Install Kontrol
+        uses: runtimeverification/install-kontrol@v1.0.0
         with:
-          version: nightly
+          version: latest
 
-      - name: Run Forge build
+      - name: Run Kontrol Tests
         run: |
-          forge --version
-          forge build --sizes
-        id: build
-
-      - name: Run Forge tests
-        run: |
-          forge test -vvv
-        id: test
+          ./run-kontrol.sh
