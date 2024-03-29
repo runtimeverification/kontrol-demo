@@ -1,6 +1,7 @@
 # Compiler files
 cache/
 out/
+*.tar
 
 # Ignores development broadcast logs
 !/broadcast

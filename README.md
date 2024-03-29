@@ -1,15 +1,27 @@
-First Steps
------------
+# Highlights
 
 This repository contains a suite of property tests tailored for the OpenZeppelin ERC20 Solidity smart contract.
+We want to demonstrate the usability and value of Kontrol for property testing and verification of smart contracts.
+
 It also includes a very basic Foundry set up ready to be your first steps into the toolchain.
 
-For kontrol documentation and more examples check [docs.runtimeverification.com/kontrol/](https://docs.runtimeverification.com/kontrol/).
+For kontrol documentation and more examples check [docs.runtimeverification.com/kontrol/](https://docs.runtimeverification.com/kontrol/).  
+
 Follow the instructions below to run your first property tests using [KONTROL!](https://github.com/runtimeverification/kontrol).
-Note that the instructions are for linux systems.
 However, they should be reproducible on Windows using the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/).
 
-Let's start with installing the tools we need.
+
+<span style="color:red">Note that the instructions are for linux systems.</span>
+
+
+# Table of Content
+- [Machine Setup](#machine-setup)
+- [Test Breakdown](#test-breakdown)
+- [Property Testing Using Foundry](#property-testing-using-foundry)
+
+
+
+# Machine Setup
 
 Installing Foundry
 ------------------
@@ -46,13 +58,16 @@ Repository contents
 -------------------
 
 This repository contains the OpenZeppelin ERC20 (took from the latest commit at that time, `1a60b061d5bb809c3d7e4ee915c77a00b1eca95d`) and the associated property tests.
-- the [`src`](./src) directory contains the Solidity source code.
-- the [`test`](./test) directory contains the Foundry property tests.
-- the [`exclude`](./exclude) file contains proofs that are expected to fail.
-- the [`doit`](./doit) file contains examples of Kontrol commands that you can use.
-- the [`erc20.sh`](./erc20.sh) file contains a script that runs all the ERC20 proofs and times them.
+- The [`src`](./src) directory contains the Solidity source code.
+- The [`test`](./test) directory contains the Foundry property tests.
+- The [`exclude`](./exclude) file contains proofs that are expected to fail.
+- The [`run-kontrol.sh`](./run-kontrol.sh) file contains examples of Kontrol commands that you can use.
+- The [`erc20.sh`](./erc20.sh) file contains a script that runs all the ERC20 proofs and times them.
 
-### Contracts
+# Test Breakdown
+
+Contracts
+---------
 
 In the [`src`](./src) subdirectory, you will find multiple files:
 
@@ -68,7 +83,8 @@ In the [`src`](./src) subdirectory, you will find multiple files:
   However, note that we don't have the source code of the alUSD token, and much less a file or something similar with the current state of alUSD on the blockchain.
   Thus, we must use Foundry's extra capabilities to excercise the test correctly.
 
-### Tests
+Tests
+-----
 
 In the [`test`](./test) subdirectory, you will find tests of varying difficulty:
 
@@ -85,7 +101,10 @@ We will use foundry for:
 - Building the project (i.e. compiling the files), and
 - Running the property tests on randomized inputs.
 
-### Building the project
+# Build the Project (Kontrol / Forge)
+
+Build with Forge
+----------------
 
 To build the project we only need to run this command in any folder of the repo:
 
@@ -95,7 +114,8 @@ forge build
 
 As simple as that.
 
-### Running tests with Foundry
+Run Tests with Foundry
+----------------------
 
 Since we have several different tests with different needs, we will tell Foundry which test to exercise.
 This is done with the options `--match` or `--match-path`, which match a string against the name of the test (executing all matches) or against the path of a file.
@@ -119,7 +139,7 @@ But don't forget to add the `--fork-url`! Otherwise the test in `exclusiveToken.
 For ERC20, most of these tests are designed to work with symbolic execution and will most likely fail when used with Foundry.
 The main differences are that:
 
-1. We use [KontrolCheats.sol](./lib/kontrol-cheatcodes/src/KontrolCheats.sol), which are not implemented in `forge`.
+1. We use [KontrolCheats.sol](https://github.com/runtimeverification/kontrol-cheatcodes/tree/master), which are not implemented in `forge`.
 2. We use `vm.assume` to set a precondition or an assumption, instead of filtering input values.
 As example, the following would reject all inputs in forge:
 
@@ -131,14 +151,16 @@ As example, the following would reject all inputs in forge:
         assertEq(erc20.balanceOf(alice), amount);
     }
 ```
-Property Verification using KEVM
---------------------------------
 
+# Property Verification using KEVM ( Kontrol )
+
+<span style="color:red">Marking here for rewrite - This could be more detailed on highlighting benefits of Kontrol over Forge -- please advise</span>  
 With kontrol installed, you'll also have the option to do property verification!
-This is a big step up in assurance from property testing, but is more computationally expensive, and often requires manual intervention.
+This is a big step up in assurance from property testing, but is more computationally expensive, and often requires manual intervention. 
 Be advised that these tests usually have a longer execution time (from a few mins up to an hour and a half), depending on the machine and the complexity of the test.
 
-### Build with kontrol
+Build with kontrol
+------------------
 
 First, we need to build a K definition for this Foundry property test suite:
 
@@ -152,36 +174,97 @@ For example:
 - If you change the Solidity code, you need to re-run the above `build` command with the option `--regen` added.
 - If you add/modify K lemmas in `lemmas.k`, you need to rerun the above `build` command with the `--rekompile` option added.
 
-Once you have kompiled the definition, you can now run proofs!
+
+Run the Proofs
+--------------
+Once you have kompiled the definition, you can now run proofs!  
 For example, to run some simple proofs from [`test/simple.t.sol`](test/simple.t.sol), you could do:
 
 ```sh
 kontrol prove --match-test Examples.test_assert_bool_failing --match-test Examples.test_assert_bool_passing -j2
 ```
 
-Notice you can use `--match-test ContractName.testName` to filter tests to run, and can use `-jN` to run listed proofs in parallel!
+Notice you can use `--match-test ContractName.testName` to filter tests to run, and can use `-jN` where `N` is number of threads to run listed proofs in parallel!   
+We suggest to not exceed 2x the number of cores in your machine. If you're machine is limited on RAM resources it's suggested to reduce parallel threads equal to Number of Cores.  
+CPU information is avaulable is viewable on Linux by running the command `lscpu` in the terminal.  
 
+For example:
+  ```sh
+  HOST:~/../kontrol-demo$ lscpu
+  Architecture:            x86_64
+    CPU op-mode(s):        32-bit, 64-bit
+    Address sizes:         39 bits physical, 48 bits virtual
+    Byte Order:            Little Endian
+  CPU(s):                  8
+    On-line CPU(s) list:   0-7
+  Vendor ID:               GenuineIntel
+    Model name:            11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz
+      CPU family:          6
+      Model:               140
+      Thread(s) per core:  2
+      Core(s) per socket:  4
+      Socket(s):           1
+  ```   
+<span style="color:red">Better suggestions? ^^</span>
 
-You can list the status of the proofs with:
+# Insights by Kontrol
+
+Kontrol List
+------------
+You can list the status of the proofs with `kontrol list`:
 
 ```sh
-kontrol list
+HOST:~/../kontrol-demo$ kontrol list
+APRProof: test%Examples.test_assert_bool_failing(bool):0
+    status: ProofStatus.FAILED
+    admitted: False
+    nodes: 7
+    pending: 1
+    failing: 1
+    vacuous: 0
+    stuck: 0
+    terminal: 2
+    refuted: 0
+    bounded: 0
+    execution time: 45s
+Subproofs: 0
+
+APRProof: test%Examples.test_assert_bool_passing(bool):0
+    status: ProofStatus.PASSED
+    admitted: False
+    nodes: 7
+    pending: 0
+    failing: 0
+    vacuous: 0
+    stuck: 0
+    terminal: 3
+    refuted: 0
+    bounded: 0
+    execution time: 41s
+Subproofs: 0
 ```
 
-You can visualize the result of proofs using the following command:
+Kontrol View
+------------
 
+You can visualize the result of proofs with `kontrol view-kcfg`  
+Lets view `Examples.test_assert_bool_failing`
 ```sh
 kontrol view-kcfg Examples.test_assert_bool_failing
 ```
 
 This launches an interactive visualizer where you can click on individual nodes and edges in the generated KCFG (K Control Flow Graph) to inspect them.
-There is also static visualization you can use:
 
+![Kontrol View KCFG Demo](media/KontrolViewKCFGDemo.png)
+
+There is also static visualization you can use:
 ```sh
 kontrol show Examples.test_assert_bool_failing
 ```
 
-This command takes extra parameters if needed:
+![Kontrol View KCFG Static Demo](media/KontrolViewKCFGStaticDemo.png)
+
+`Kontrol view` command takes extra parameters if needed:
 
 - `--no-minimize`: Do not omit details in node and edge output.
 - `--node NODE_ID`: Output the given node fully as well as the KCFG (repeats allowed).
@@ -192,19 +275,21 @@ You recompile using the command above and the `--rekompile` flag.
 Next call `simplify-node` on the node, and check that it simplifies.
 
 For example, if there is a branch that should not happen:
-You add a lemma, and call `rekompile`, then check that it simplifies the bad branch to `bottom` on using `simplify-node`.
-After you're satisfied it won't branch again, you call `remove-node` on the node prior to the branch.
+You add a lemma, and call `rekompile`, then check that it simplifies the bad branch to `bottom` on using `simplify-node`.  
+After you're satisfied it won't branch again, you call `remove-node` on the node prior to the branch.  
 Then recall `prove` but without `--reinit` flag, to resume execution.
 
 -------
 
-And this is it! If you followed the instructions you just ran your first Foundry tests!
+And that is it! If you followed the instructions you just ran your first Foundry tests!
 
-To go from here we recommend reading the [Foundry book](https://book.getfoundry.sh).
-Have fun building!
+To go from here we recommend checking out [Kontrol Homepage](https://kontrol.runtimeverification.com)  
+And reading the [Foundry book](https://book.getfoundry.sh).  
+
+🎉 Have fun building! 🎉
 
 ---------------
 
-**DISCLAIMER**: The files in this repository are toy examples only meant to illustrate how Foundry works.
+<span style="color:red">**DISCLAIMER**: The files in this repository are toy examples only meant to illustrate how Foundry works.
 They are not to be used in real-world cases.
-Runtime Verification will not be held accountable should you do otherwise.
+Runtime Verification will not be held accountable should you do otherwise.</span>
