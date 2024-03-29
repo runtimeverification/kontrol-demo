@@ -119,7 +119,7 @@ But don't forget to add the `--fork-url`! Otherwise the test in `exclusiveToken.
 For ERC20, most of these tests are designed to work with symbolic execution and will most likely fail when used with Foundry.
 The main differences are that:
 
-1. We use [KontrolCheats.sol](./lib/kontrol-cheatcodes/src/KontrolCheats.sol), which are not implemented in `forge`.
+1. We use [KontrolCheats.sol](https://github.com/runtimeverification/kontrol-cheatcodes/tree/master), which are not implemented in `forge`.
 2. We use `vm.assume` to set a precondition or an assumption, instead of filtering input values.
 As example, the following would reject all inputs in forge:
 
