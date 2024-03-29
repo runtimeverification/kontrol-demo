@@ -12,6 +12,7 @@ env:
 
 jobs:
   check:
+    concurrency: kontrol-ci-demo
     strategy:
       fail-fast: true
 
