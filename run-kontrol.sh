@@ -102,7 +102,7 @@ kontrol_prove -j9                                              \
 # date
 # kontrol_prove --reinit
 # date
-# kontrol_prove --reinitf
+# kontrol_prove --reinit
 # date
 # 
 # test=AssertTest.test_sum_1000
