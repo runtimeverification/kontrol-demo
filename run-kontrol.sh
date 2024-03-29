@@ -63,7 +63,7 @@ verbose=
 verbose=--verbose
 
 break_on_calls=--break-on-calls
-# break_on_calls=
+break_on_calls=
 
 bug_report="--bug-report=BUGREPORT.bug"
 # bug_report=
