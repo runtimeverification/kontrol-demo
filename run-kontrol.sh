@@ -1,52 +1,53 @@
+#!/usr/bin/env bash
 set -euxo pipefail
 
 kontrol_build() {
     kontrol build --require lemmas.k --module-import ERC20:DEMO-LEMMAS \
-            ${verbose}
+            "${verbose}"
 }
 
 kontrol_prove() {
-    kontrol prove ${verbose}     \ 
-            ${break_on_calls}    \
-            ${bug_report}        \
-            ${fail_fast} "$@"
+    kontrol prove "${verbose}"\
+            "${break_on_calls}"\
+            "${bug_report}"\
+            "$@"
 }
 
-kontrol_show() {
-    kontrol show ${verbose} ${test} "$@"
-}
+# kontrol_show() {
+#     kontrol show "${verbose}" "${test}" "$@"
+# }
 
-kontrol_to_dot() {
-    kontrol to-dot ${verbose} ${test} "$@"
-}
+# kontrol_to_dot() {
+#     kontrol to-dot "${verbose}" "${test}" "$@"
+# }
 
-kontrol_view() {
-    kontrol view-kcfg ${verbose} ${test} "$@"
-}
+# kontrol_view() {
+#     kontrol view-kcfg "${verbose}" "${test}" "$@"
+# }
 
-kontrol_list() {
-    kontrol list ${verbose} "$@"
-}
+# kontrol_list() {
+#     kontrol list "${verbose}" "$@"
+# }
 
-kontrol_remove_node() {
-    node_id="$1" ; shift
-    kontrol remove-node ${verbose} ${test} ${node_id} "$@"
-}
+# kontrol_remove_node() {
+#     node_id="$1" ; shift
+#     kontrol remove-node "${verbose}" "${test}" ${node_id} "$@"
+# }
 
-kontrol_simplify_node() {
-    node_id="$1" ; shift
-    kontrol simplify-node ${verbose} ${test} ${node_id} ${bug_report} "$@"
-}
+# kontrol_simplify_node() {
+#     node_id="$1" ; shift
+#     kontrol simplify-node "${verbose}" "${test}" ${node_id} "${bug_report}" "$@"
+# }
 
-kontrol_step_node() {
-    node_id="$1" ; shift
-    kontrol step-node ${verbose} ${test} ${node_id} ${bug_report} "$@"
-}
+# kontrol_step_node() {
+#     node_id="$1" ; shift
+#     kontrol step-node "${verbose}" "${test}" ${node_id} "${bug_report}" "$@"
+# }
 
-kontrol_section_edge() {
-    edge_id="$1" ; shift
-    kontrol section-edge ${verbose} ${test} ${edge_id} ${bug_report} "$@"
-}
+# kontrol_section_edge() {
+#     edge_id="$1" ; shift
+#     kontrol section-edge "${verbose}" "${test}" ${edge_id} "${bug_report}" "$@"
+# }
 
 #test=Examples.test_assert_bool_failing
 #test=Examples.test_assert_bool_passing
@@ -64,7 +65,7 @@ verbose=--verbose
 break_on_calls=--break-on-calls
 # break_on_calls=
 
-bug_report=--bug-report
+bug_report="--bug-report=BUGREPORT.bug"
 # bug_report=
 
 # Uncomment these lines as needed
