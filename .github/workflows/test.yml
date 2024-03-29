@@ -1,6 +1,11 @@
 name: Kontrol CI Demo
 
-on: workflow_dispatch
+on: 
+  pull_request:
+    branches:
+      - master
+  
+  workflow_dispatch:
 
 env:
   FOUNDRY_PROFILE: ci
