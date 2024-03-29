@@ -57,10 +57,9 @@ kontrol_section_edge() {
 kontrol_build --require lemmas.k --module-import ERC20:DEMO-LEMMAS --verbose
 kontrol_list
 kontrol_prove -j8 \
-            --verbose \
             --bug-report=BUGREPORT.bug \
-            --match-test Examples.test_assert_bool_failing
-            # --match-test Examples.test_assert_bool_passing\
+            --match-test Examples.test_assert_bool_failing \
+            --match-test Examples.test_assert_bool_passing
             # --match-test Examples.test_wmul_increasing_overflow\
             # --match-test Examples.test_wmul_increasing\
             # --match-test Examples.test_wmul_increasing_positive\
@@ -92,8 +91,8 @@ kontrol_show --verbose
 ################
 # Modify Nodes #
 ################
-kontrol_remove_node 4b6c47..d6d6d3
-kontrol_prove --reinit
+# kontrol_remove_node 4b6c47..d6d6d3
+# kontrol_prove --reinit
 
 ##############################
 # Additional Reinit Examples #
