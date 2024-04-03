@@ -14,13 +14,25 @@ However, they should be reproducible on Windows using the [Windows Subsystem for
 <span style="color:red">Note that the instructions are for linux systems.</span>
 
 
-# Table of Content
+# Table of Contents
+- [Highlights](#highlights)
 - [Machine Setup](#machine-setup)
+  - [Installing Foundry](#installing-foundry)
+  - [Installing KONTROL](#installing-kontrol)
+  - [Repository contents](#repository-contents)
 - [Test Breakdown](#test-breakdown)
-- [Property Testing Using Foundry](#property-testing-using-foundry)
-
-
-
+  - [Contracts](#contracts)
+  - [Tests](#tests)
+- [Property Testing Using Foundry ( Forge )](#property-testing-using-foundry--forge-)
+  - [Build with Forge](#build-with-forge)
+  - [Run Tests with Foundry](#run-tests-with-foundry)
+- [Property Verification using KEVM ( Kontrol )](#property-verification-using-kevm--kontrol-)
+  - [Build with kontrol](#build-with-kontrol)
+  - [Run the Proofs](#run-the-proofs)
+- [Insights by Kontrol](#insights-by-kontrol)
+  - [Kontrol List](#kontrol-list)
+  - [Kontrol View](#kontrol-view)
+  
 # Machine Setup
 
 Installing Foundry
@@ -93,15 +105,12 @@ In the [`test`](./test) subdirectory, you will find tests of varying difficulty:
 - `token.t.sol`: Tests of `token.sol`.
 - `exclusiveToken.t.sol`: Tests of `exclusiveToken.t.sol`.
 
-Property Testing Using Foundry
-------------------------------
+# Property Testing Using Foundry ( Forge )
 
 We will use foundry for:
 
 - Building the project (i.e. compiling the files), and
 - Running the property tests on randomized inputs.
-
-# Build the Project (Kontrol / Forge)
 
 Build with Forge
 ----------------
@@ -205,8 +214,6 @@ For example:
       Core(s) per socket:  4
       Socket(s):           1
   ```   
-<span style="color:red">Better suggestions? ^^</span>
-
 # Insights by Kontrol
 
 Kontrol List
