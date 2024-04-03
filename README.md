@@ -214,8 +214,6 @@ For example:
       Core(s) per socket:  4
       Socket(s):           1
   ```   
-<span style="color:red">Better suggestions? ^^</span>
-
 # Insights by Kontrol
 
 Kontrol List
