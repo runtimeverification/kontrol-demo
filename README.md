@@ -193,8 +193,8 @@ For example, to run some simple proofs from [`test/simple.t.sol`](test/simple.t.
 kontrol prove --match-test Examples.test_assert_bool_failing --match-test Examples.test_assert_bool_passing -j2
 ```
 
-Notice you can use `--match-test ContractName.testName` to filter tests to run, and can use `-jN` where `N` is number of threads to run listed proofs in parallel!   
-We suggest to not exceed 2x the number of cores in your machine. If you're machine is limited on RAM resources it's suggested to reduce parallel threads equal to Number of Cores.  
+Notice you can use `--match-test ContractName.testName` to filter tests to run, and can use `-jN` where `N` is number of threads to run listed proofs in parallel!  
+We suggest Max thresds should be at most (M - 8) / 8 in a machine with M GB of RAM If you're machine is limited on RAM resources it's suggested to reduce parallelization.   
 CPU information is avaulable is viewable on Linux by running the command `lscpu` in the terminal.  
 
 For example:

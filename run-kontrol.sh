@@ -54,7 +54,7 @@ kontrol_section_edge() {
 #################################
 # pkill kore-rpc || true
 
-kontrol_build --require lemmas.k --module-import ERC20:DEMO-LEMMAS --verbose
+kontrol_build --require lemmas.k --module-import SIMPLE:DEMO-LEMMAS --verbose
 kontrol_list
 kontrol_prove -j8 \
             --bug-report=BUGREPORT.bug \
