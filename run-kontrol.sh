@@ -56,7 +56,7 @@ kontrol_section_edge() {
 
 kontrol_build --require lemmas.k --module-import ERC20:DEMO-LEMMAS --verbose
 kontrol_list
-kontrol_prove -j8 \
+kontrol_prove -j$(getconf _NPROCESSORS_ONLN) \
             --bug-report=BUGREPORT.bug \
             --match-test Examples.test_assert_bool_failing \
             --match-test Examples.test_assert_bool_passing
