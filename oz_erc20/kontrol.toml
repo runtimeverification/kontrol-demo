@@ -2,9 +2,9 @@
 foundry-project-root       = '.'
 regen                      = false
 rekompile                  = false
-verbose                    = true
+verbose                    = false
 debug                      = false
-require                    = 'lemmas.k'
+require                    = 'lemmas.md'
 module-import              = 'TestBase:KONTROL-LEMMAS'
 
 [prove.default]
@@ -30,5 +30,5 @@ run-constructor            = false
 
 [show.default]
 foundry-project-root       = '.'
-verbose                    = true
+verbose                    = false
 debug                      = false
