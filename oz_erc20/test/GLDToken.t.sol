@@ -80,6 +80,27 @@ contract GLDTokenTest is Test, KontrolCheats {
         gld.mint(address(0), value);
     }
 
+    function test_mint_succeeds_whenNoOverflow(uint256 amount) external {
+        // generating a fresh random/symbolic address `receiver`and uint256 `receiverBalance`
+        address receiver = vm.randomAddress();
+        uint256 receiverBalance = vm.randomUint();
+
+        // assuming no overflow occurs during minting
+        vm.assume(receiverBalance <= type(uint256).max - amount);
+
+        // calculating _balance[sender] slot
+        bytes32 balance_slot = keccak256(abi.encode(receiver, uint256(0)));
+        // _balance[receiver] = receiverBalance;
+        vm.store(address(gld), balance_slot, bytes32(receiverBalance));
+
+        // minting `amount` to `receiver`
+        gld.mint(receiver, amount);
+
+        uint256 newReceiverBalance = gld.balanceOf(receiver);
+        // updated user balance is equal to the original one plus minted amount
+        assertEq(newReceiverBalance, receiverBalance + amount);
+    }
+
     /*
       `kevm.symbolicStorage(account, storageSlot)` is enabling the whitelist storage feature.
       Only storage writes on that specific storageSlot in the specified accounts are enabled.

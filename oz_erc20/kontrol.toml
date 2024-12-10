@@ -8,6 +8,7 @@ require                    = 'lemmas.md'
 module-import              = 'TestBase:KONTROL-LEMMAS'
 
 [prove.default]
+schedule                   = 'CANCUN'
 foundry-project-root       = '.'
 verbose                    = true
 debug                      = false
