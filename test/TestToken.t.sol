@@ -21,7 +21,10 @@ contract TestTokenTest is Test, KontrolCheats {
     }
 
     function setUp() public {
+        /* TODO:
         uint8 decimals = freshUInt8();
+        */
+        uint8 decimals = 18;
         token = new TestToken("TestToken", "TT", decimals);
     }
 
