@@ -6,7 +6,7 @@ verbose                    = false
 debug                      = false
 require                    = 'lemmas.k'
 module-import              = 'TestBase:KONTROL-LEMMAS'
-auxiliary-lemmas           = false
+auxiliary-lemmas           = true
 o2                         = true
 
 [prove.default]
