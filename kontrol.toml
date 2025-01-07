@@ -10,6 +10,7 @@ auxiliary-lemmas           = false
 o2                         = true
 
 [prove.default]
+schedule                   = 'CANCUN'
 foundry-project-root       = '.'
 verbose                    = false
 debug                      = false
