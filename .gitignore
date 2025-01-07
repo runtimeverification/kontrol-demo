@@ -10,5 +10,3 @@ out/
 
 # Dotenv file
 .env
-
-/lib
