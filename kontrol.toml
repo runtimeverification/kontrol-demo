@@ -30,6 +30,7 @@ break-on-basic-blocks      = false
 break-on-cheatcodes        = false
 run-constructor            = false
 no-stack-checks            = true
+match-test                 = ['test_xor', 'test_donateETH', 'test_transfer', 'test_balanceToRebasingCredits']
 
 [show.default]
 foundry-project-root       = '.'

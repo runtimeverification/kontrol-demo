@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 import {Test, console} from "forge-std/Test.sol";
 
 contract RebasingTokenTest is Test {
-    function check_balanceToRebasingCredits(uint256 rebasingCreditsPerToken, uint256 balance) public {
+    function test_balanceToRebasingCredits(uint256 rebasingCreditsPerToken, uint256 balance) public {
         vm.assume(rebasingCreditsPerToken <= 1e27 && rebasingCreditsPerToken >= 1e18);
         vm.assume(balance <= 1e25);
 
@@ -12,7 +12,7 @@ contract RebasingTokenTest is Test {
         assert(actualBalance == balance);
     }
 
-    function test_balanceToRebasingCredits(uint256 rebasingCreditsPerToken, uint256 balance) public {
+    function test_balanceToRebasingCredits_reverts(uint256 rebasingCreditsPerToken, uint256 balance) public {
         vm.assume(rebasingCreditsPerToken <= 1e27); // && rebasingCreditsPerToken >= 1e18);
         vm.assume(balance <= 1e25);
 
