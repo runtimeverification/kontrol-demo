@@ -4,14 +4,16 @@ regen                      = false
 rekompile                  = false
 verbose                    = false
 debug                      = false
-require                    = 'lemmas.md'
+require                    = 'lemmas.k'
 module-import              = 'TestBase:KONTROL-LEMMAS'
+auxiliary-lemmas           = false
+o2                         = true
 
 [prove.default]
 foundry-project-root       = '.'
-verbose                    = true
+verbose                    = false
 debug                      = false
-max-depth                  = 25000
+max-depth                  = 10000
 reinit                     = false
 cse                        = false
 workers                    = 4
@@ -27,8 +29,14 @@ break-on-storage           = false
 break-on-basic-blocks      = false
 break-on-cheatcodes        = false
 run-constructor            = false
+no-stack-checks            = true
 
 [show.default]
 foundry-project-root       = '.'
 verbose                    = false
 debug                      = false
+use-hex-encoding           = false
+
+[view-kcfg.default]
+foundry-project-root       = '.'
+use-hex-encoding           = false

@@ -105,12 +105,8 @@ function test_transfer_revertOnOverflow(address from, address to, uint256 amount
         
         // `from` has enough tokens
         vm.assume(amount <= token.balanceOf(from));
-        // no overflow occurs on transfer
-        // not wrapped in `unchecked`:
-        // unchecked {
-            vm.assume(token.balanceOf(to) <= token.balanceOf(to) + amount);
-            // vm.assume(token.balanceOf(to) + amount <= 2**256 - 1);
-        // }
+        // this assumption is not wrapped in `unchecked`
+        vm.assume(token.balanceOf(to) <= token.balanceOf(to) + amount);
 
         uint256 prev_from = token.balanceOf(from);
         uint256 prev_to   = token.balanceOf(to);

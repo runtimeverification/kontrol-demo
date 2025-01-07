@@ -12,7 +12,7 @@ contract RebasingTokenTest is Test {
         assert(actualBalance == balance);
     }
 
-    function testFail_balanceToRebasingCredits(uint256 rebasingCreditsPerToken, uint256 balance) public {
+    function test_balanceToRebasingCredits(uint256 rebasingCreditsPerToken, uint256 balance) public {
         vm.assume(rebasingCreditsPerToken <= 1e27); // && rebasingCreditsPerToken >= 1e18);
         vm.assume(balance <= 1e25);
 

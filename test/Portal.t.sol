@@ -32,6 +32,7 @@ contract PortalTest is Test, KontrolCheats {
         address sender = kevm.freshAddress();       
         vm.assume(sender != address(portalContract)); 
 
+        // Dealing symbolic amount of balance tokens to the user 
         vm.deal(sender, balance);
         vm.prank(sender);
         portalContract.donateETH{value: tokens}();
@@ -43,6 +44,7 @@ contract PortalTest is Test, KontrolCheats {
         vm.assume(sender != address(portalContract)); 
 
         vm.deal(sender, balance);
+        // Making sure that the user has enough tokens
         vm.assume(balance >= tokens);
         vm.prank(sender);
         portalContract.donateETH{value: tokens}();

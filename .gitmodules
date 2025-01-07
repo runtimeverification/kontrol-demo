@@ -1,21 +1,6 @@
-[submodule "oz_erc20/lib/forge-std"]
-	path = oz_erc20/lib/forge-std
+[submodule "lib/forge-std"]
+	path = lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
-[submodule "oz_erc20/lib/kontrol-cheatcodes"]
-	path = oz_erc20/lib/kontrol-cheatcodes
-	url = https://github.com/runtimeverification/kontrol-cheatcodes.git
-[submodule "oz_erc20/lib/forge-std"]
-	path = oz_erc20/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "oz_erc20/lib/kontrol-cheatcodes"]
-	path = oz_erc20/lib/kontrol-cheatcodes
-	url = https://github.com/runtimeverification/kontrol-cheatcodes
-[submodule "oz_erc20/lib/openzeppelin-contracts"]
-	path = oz_erc20/lib/openzeppelin-contracts
-	url = https://github.com/OpenZeppelin/openzeppelin-contracts
-[submodule "wonderland/lib/forge-std"]
-	path = wonderland/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "wonderland/lib/kontrol-cheatcodes"]
-	path = wonderland/lib/kontrol-cheatcodes
+[submodule "lib/kontrol-cheatcodes"]
+	path = lib/kontrol-cheatcodes
 	url = https://github.com/runtimeverification/kontrol-cheatcodes
