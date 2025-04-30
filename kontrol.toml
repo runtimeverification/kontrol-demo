@@ -1,0 +1,42 @@
+[build.default]
+foundry-project-root       = '.'
+regen                      = false
+rekompile                  = false
+verbose                    = false
+debug                      = false
+require                    = 'lemmas.k'
+module-import              = 'TestBase:KONTROL-LEMMAS'
+auxiliary-lemmas           = true
+o2                         = true
+
+[prove.default]
+foundry-project-root       = '.'
+verbose                    = false
+debug                      = false
+max-depth                  = 25000
+reinit                     = false
+cse                        = false
+workers                    = 4
+failure-information        = true
+counterexample-information = true
+minimize-proofs            = false
+fail-fast                  = true
+smt-timeout                = 1000
+break-every-step           = false
+break-on-jumpi             = false
+break-on-calls             = false
+break-on-storage           = false
+break-on-basic-blocks      = false
+break-on-cheatcodes        = false
+run-constructor            = false
+no-stack-checks            = true
+
+[show.default]
+foundry-project-root       = '.'
+verbose                    = false
+debug                      = false
+use-hex-encoding           = false
+
+[view-kcfg.default]
+foundry-project-root       = '.'
+use-hex-encoding           = false
